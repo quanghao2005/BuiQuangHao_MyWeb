@@ -62,4 +62,14 @@ class ProductController extends Controller
     {
         //
     }
+    //test 1
+    public function test1()
+    {
+        return redirect()->route('admin.dashboard');
+    }
+    //test 2
+    public function test2()
+    {
+        return redirect('/admin/dashboard');
+    }
 }

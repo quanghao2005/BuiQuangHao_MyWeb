@@ -11,14 +11,26 @@ use App\Http\Controllers\Admin\PostController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::resource('admin/category', CategoryController::class);
+
+// Các Route Demo
 Route::get('/demo', [DemoController::class, 'index']);
 Route::get('/demo2', [DemoController::class, 'index2']);
 Route::get('/demo3', [DemoController::class, 'index3']);
 Route::get('/demo4/{id}', [DemoController::class, 'index4']);
 Route::get('/demo5/{id?}', [DemoController::class, 'index5']);
 Route::get('/demo6/{parram1}/{parram2}', [DemoController::class, 'index6']);
+
+// Các Route Resource cho Admin
+Route::resource('admin/category', CategoryController::class);
 Route::resource('admin/brand', BrandController::class);
 Route::resource('admin/product', ProductController::class);
 Route::resource('admin/user', UserController::class);
 Route::resource('admin/post', PostController::class);
+
+Route::get('/admin/dashboard', function () {
+    return view('admin.dashboard');
+})->name('admin.dashboard');
+
+// Các Route Test chuyển hướng trong ProductController
+Route::get('test1', [ProductController::class, 'test1']);
+Route::get('test2', [ProductController::class, 'test2']);
