@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('brands', function (Blueprint $table) {
-            $table->increments('brandid');
+            $table->id('brandid'); // Phải đồng bộ với products
             $table->string('brandname', 100)->unique();
             $table->string('slug', 150)->unique();
             $table->string('image')->nullable();

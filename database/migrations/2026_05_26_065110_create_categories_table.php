@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('categories', function (Blueprint $table) {
-            $table->increments('cateid');
+            $table->id('cateid'); // Sử dụng id() để mặc định là BIGINT UNSIGNED
             $table->string('catename', 100)->unique();
             $table->string('slug', 150)->unique();
             $table->string('image')->nullable();

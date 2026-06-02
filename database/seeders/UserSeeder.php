@@ -8,37 +8,22 @@ use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        DB::table('users')->insert([
-            'username' => 'admin',
-            'password' => Hash::make('123456'),
-            'fullname' => 'Quản Trị Viên',
-            'email' => 'admin@gmail.com',
-            'phone' => '0987654321',
-            'image' => 'admin.png',
-            'role' => 'admin',
-            'status' => 1,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
-
-        for ($i = 1; $i <= 4; $i++) {
-            $name = fake()->name();
+        for ($i = 1; $i <= 10; $i++) {
             DB::table('users')->insert([
-                'username' => fake()->unique()->userName(),
-                'password' => Hash::make('123456'),
-                'fullname' => $name,
-                'email' => fake()->unique()->safeEmail(),
-                'phone' => fake()->phoneNumber(),
-                'image' => 'user' . $i . '.png',
-                'role' => 'user',
-                'status' => fake()->numberBetween(0, 1),
+                'fullname'   => fake()->name(),
+                'username'   => fake()->unique()->userName(),
+                'email'      => fake()->unique()->safeEmail(),
+                'password'   => md5('123456'), // Tài liệu thiết kế VARCHAR(50) nên sử dụng md5 hoặc chuỗi text thường để test nhanh phù hợp độ dài.
+                'phone'      => fake()->unique()->phoneNumber(),
+                'address'    => fake()->address(),
+                'gender'     => fake()->randomElement([0, 1, 2]), // 1: Nam, 2: Nữ, 0: Khác
+                'birthday'   => fake()->date('Y-m-d', '2005-01-01'), // Ngày sinh ngẫu nhiên trước năm 2005
+                'role'       => fake()->randomElement([1, 2]), // 1: quản lý, 2: nhân viên
+                'status'     => fake()->numberBetween(0, 1), // 1: kích hoạt, 0: khóa
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
         }
     }

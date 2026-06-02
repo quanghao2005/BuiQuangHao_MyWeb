@@ -8,16 +8,16 @@
     <title>@yield('title', 'My Web')</title>
 
     {{-- CDN Bootstrap CSS --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     {{-- CDN Bootstrap Icons --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row min-vh-100">
-            {{-- SIDEBAR --}}
+            {{-- SIDEBAR LEFT --}}
             <div class="col-md-2 bg-dark text-white p-0">
                 @include('admin._partials.sidebar')
             </div>
@@ -29,9 +29,9 @@
                     @include('admin._partials.header')
                 </div>
 
-                {{-- MAIN CONTENT --}}
+                {{-- MAIN CONTENT DYNAMIC --}}
                 <main class="flex-grow-1 bg-light p-3">
-                    <h1>Welcome ....</h1>
+                    @yield('content')
                 </main>
 
                 {{-- FOOTER --}}
@@ -43,7 +43,7 @@
     </div>
 
     {{-- CDN Bootstrap JavaScript --}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

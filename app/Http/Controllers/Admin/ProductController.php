@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -12,47 +13,26 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $list = DB::table('products')
+            // SỬA: 'categories.id' thành 'categories.cateid'
+            ->join('categories', 'products.cateid', '=', 'categories.cateid')
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+            // SỬA: 'brands.id' thành 'brands.brandid'
+            ->leftJoin('brands', 'products.brandid', '=', 'brands.brandid')
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+            ->select(
+                'products.id',
+                'products.productname',
+                'products.image',
+                'products.price',
+                'products.status',
+                'categories.catename',
+                'brands.brandname'
+            )
+            ->orderBy('products.id', 'desc')
+            ->get();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
+        return view('admin.products.index', compact('list'));
     }
 
     /**
@@ -60,14 +40,34 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        // Xóa sản phẩm
+        DB::table('products')->where('id', $id)->delete();
+        return redirect()->route('admin.products.index')->with('success', 'Đã xóa sản phẩm!');
     }
-    //test 1
+
+    // Các hàm khác để trống hoặc triển khai sau
+    public function create()
+    {
+        return view('admin.products.create');
+    }
+    public function store(Request $request)
+    { /* Xử lý thêm */
+    }
+    public function show(string $id)
+    { /* Xem chi tiết */
+    }
+    public function edit(string $id)
+    { /* Form sửa */
+    }
+    public function update(Request $request, string $id)
+    { /* Xử lý sửa */
+    }
+
+    // Các hàm test của bạn giữ nguyên
     public function test1()
     {
         return redirect()->route('admin.dashboard');
     }
-    //test 2
     public function test2()
     {
         return redirect('/admin/dashboard');
