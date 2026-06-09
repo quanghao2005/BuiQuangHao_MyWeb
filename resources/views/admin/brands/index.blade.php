@@ -1,42 +1,65 @@
 @extends('admin.layouts.admin')
 
-@section('title', 'Quản lý Thương hiệu')
+@section('title', 'Thương hiệu')
 
 @section('content')
     <div class="container-fluid pt-4 px-4">
-        <div class="bg-light rounded p-4">
-            <h5 class="mb-4">Danh sách thương hiệu</h5>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Ảnh</th>
-                        <th>Mã thương hiệu</th>
-                        <th>Tên thương hiệu</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($list as $key => $item)
+        <div class="bg-light rounded h-100 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0 text-uppercase fw-bold text-primary">Danh sách Thương hiệu</h5>
+                <a href="{{ route('admin.brands.create') }}" class="btn btn-sm btn-success px-3">
+                    <i class="bi bi-plus-lg me-2"></i>Thêm mới
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark text-center">
                         <tr>
-                            <td>{{ $key + 1 }}</td>
-                            <td><img src="{{ asset('images/' . $item->image) }}" width="50"></td>
-                            <td>{{ $item->brandid }}</td>
-                            <td>{{ $item->brandname }}</td>
-                            <td>{{ $item->status == 1 ? 'Hiển thị' : 'Ẩn' }}</td>
-                            <td>
-                                <form action="{{ route('admin.brands.destroy', $item->brandid) }}" method="POST"
-                                    onsubmit="return confirm('Bạn có chắc chắn muốn xóa?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
-                                </form>
-                            </td>
+                            <th style="width: 70px;">STT</th>
+                            <th style="width: 120px;">ID</th>
+                            <th>Tên thương hiệu</th>
+                            <th>Slug</th>
+                            <th style="width: 150px;">Trạng thái</th>
+                            <th style="width: 150px;">Hành động</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @forelse ($list as $key => $item)
+                            <tr>
+                                <td class="text-center fw-bold">{{ $list->firstItem() + $key }}</td>
+                                <td class="text-center fw-bold text-secondary">{{ $item->id }}</td>
+                                <td class="fw-bold">{{ $item->brandname }}</td>
+                                <td><code>{{ $item->slug }}</code></td>
+                                <td class="text-center">
+                                    @if ($item->status == 1)
+                                        <span class="badge bg-success px-2">Hiển thị</span>
+                                    @else
+                                        <span class="badge bg-danger px-2">Ẩn</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ route('admin.brands.edit', $item->brandid) }}"
+                                        class="btn btn-sm btn-warning">Sửa</a>
+
+                                    <form action="{{ route('admin.brands.destroy', $item->brandid) }}" method="POST"
+                                        class="d-inline" onsubmit="return confirm('Xóa thương hiệu này?')">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-sm btn-danger">Xóa</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Không có dữ liệu</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-center mt-3">
+                {{ $list->links() }}
+            </div>
         </div>
     </div>
 @endsection

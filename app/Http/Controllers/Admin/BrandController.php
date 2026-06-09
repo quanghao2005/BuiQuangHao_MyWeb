@@ -4,23 +4,20 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; // Import Facade DB để sử dụng Query Builder
+use App\Models\Brand;
+use Illuminate\Support\Str; // Import để dùng Str::slug()
 
 class BrandController extends Controller
 {
     /**
      * Display a listing of the resource.
-     * (Đáp ứng Câu C: Hiển thị danh sách thương hiệu)
      */
-    public function index()
+    public function index($limit = 10)
     {
-        // Đổi cột 'id' thành 'brandid' để phù hợp với cơ sở dữ liệu
-        $list = DB::table('brands')
-            ->select('brandid', 'brandname', 'slug', 'image', 'status')
-            ->orderBy('brandname', 'asc') // Sắp xếp theo tên thương hiệu từ A-Z
-            ->get();
+        $list = Brand::select('brandid', 'brandname', 'slug', 'image', 'status')
+            ->orderBy('brandname', 'asc')
+            ->paginate($limit);
 
-        // Trả về view index của thương hiệu và truyền biến $list sang giao diện
         return view('admin.brands.index', compact('list'));
     }
 
@@ -37,16 +34,19 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
-        DB::table('brands')->insert([
-            'brandname'  => $request->brandname,
-            'slug'       => $request->slug,
-            'image'      => $request->image ?? null,
-            'status'     => $request->status ?? 1,
-            'created_at' => now(),
-            'updated_at' => now(),
+        $request->validate([
+            'brandname' => 'required|string|max:255',
         ]);
 
-        return redirect()->route('admin.brands.index');
+        Brand::create([
+            'brandname' => $request->brandname,
+            // Tự động tạo slug nếu người dùng bỏ trống
+            'slug'      => $request->slug ?? Str::slug($request->brandname),
+            'image'     => $request->image ?? null,
+            'status'    => $request->status ?? 1,
+        ]);
+
+        return redirect()->route('admin.brands.index')->with('success', 'Thêm thương hiệu thành công!');
     }
 
     /**
@@ -54,7 +54,9 @@ class BrandController extends Controller
      */
     public function show(string $id)
     {
-        // Để trống hoặc viết logic xem chi tiết nếu cần
+        // Phải dùng where vì khóa chính là 'brandid'
+        $brand = Brand::where('brandid', $id)->firstOrFail();
+        return view('admin.brands.show', compact('brand'));
     }
 
     /**
@@ -62,8 +64,7 @@ class BrandController extends Controller
      */
     public function edit(string $id)
     {
-        // Sửa điều kiện tìm kiếm theo cột 'brandid'
-        $brand = DB::table('brands')->where('brandid', $id)->first();
+        $brand = Brand::where('brandid', $id)->firstOrFail();
         return view('admin.brands.edit', compact('brand'));
     }
 
@@ -72,30 +73,31 @@ class BrandController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Sửa điều kiện cập nhật theo cột 'brandid'
-        DB::table('brands')
-            ->where('brandid', $id)
-            ->update([
-                'brandname'  => $request->brandname,
-                'slug'       => $request->slug,
-                'image'      => $request->image ?? null,
-                'status'     => $request->status,
-                'updated_at' => now(),
-            ]);
+        $request->validate([
+            'brandname' => 'required|string|max:255',
+        ]);
 
-        return redirect()->route('admin.brands.index');
+        // Tìm thương hiệu theo 'brandid' và cập nhật
+        $brand = Brand::where('brandid', $id)->firstOrFail();
+
+        $brand->update([
+            'brandname' => $request->brandname,
+            'slug'      => $request->slug ?? Str::slug($request->brandname),
+            'image'     => $request->image ?? $brand->image,
+            'status'    => $request->status,
+        ]);
+
+        return redirect()->route('admin.brands.index')->with('success', 'Cập nhật thương hiệu thành công!');
     }
 
     /**
      * Remove the specified resource from storage.
-     * (Đáp ứng Câu F: Thực hiện xóa dữ liệu với Query Builder)
      */
     public function destroy(string $id)
     {
-        // Sửa điều kiện xóa dựa trên cột 'brandid'
-        DB::table('brands')->where('brandid', $id)->delete();
+        // Xóa theo 'brandid'
+        Brand::where('brandid', $id)->delete();
 
-        // Xóa xong quay trở lại trang danh sách thương hiệu
-        return redirect()->route('admin.brands.index');
+        return redirect()->route('admin.brands.index')->with('success', 'Đã xóa thương hiệu!');
     }
 }

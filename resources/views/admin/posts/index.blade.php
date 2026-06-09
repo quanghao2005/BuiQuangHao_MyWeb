@@ -1,41 +1,70 @@
 @extends('admin.layouts.admin')
-
-@section('title', 'Danh sách bài viết')
+@section('title', 'Danh sách Bài viết')
 
 @section('content')
     <div class="container-fluid pt-4 px-4">
         <div class="bg-light rounded p-4">
-            <h5 class="mb-4">Danh sách bài viết</h5>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Ảnh</th>
-                        <th>Tiêu đề</th>
-                        <th>Người đăng</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($list as $key => $item)
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0 text-primary fw-bold text-uppercase">Danh Sách Bài Viết</h5>
+                <a href="{{ route('admin.posts.create') }}" class="btn btn-sm btn-success px-3"><i class="bi bi-plus"></i> Thêm
+                    mới</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle text-center">
+                    <thead class="table-dark">
                         <tr>
-                            <td>{{ $key + 1 }}</td>
-                            <td><img src="{{ asset('images/' . $item->image) }}" width="50"></td>
-                            <td>{{ $item->title }}</td>
-                            <td>{{ $item->fullname }}</td>
-                            <td>{{ $item->status == 1 ? 'Hiển thị' : 'Ẩn' }}</td>
-                            <td>
-                                <form action="{{ route('admin.posts.destroy', $item->id) }}" method="POST"
-                                    onsubmit="return confirm('Xóa bài này?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
-                                </form>
-                            </td>
+                            <th width="50">ID</th>
+                            <th>Hình ảnh</th>
+                            <th>Tiêu đề bài viết</th>
+                            <th>Tác giả</th>
+                            <th>Loại (Type)</th>
+                            <th>Trạng thái</th>
+                            <th width="150">Hành động</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @forelse($list as $item)
+                            <tr>
+                                <td>{{ $item->id }}</td>
+                                <td>
+                                    <img src="{{ $item->image ? asset('images/' . $item->image) : asset('images/default.png') }}"
+                                        width="80" height="50" style="object-fit: cover;">
+                                </td>
+                                <td class="text-start fw-bold">{{ $item->title }}</td>
+
+                                <td class="text-primary">{{ $item->user?->fullname ?? 'Khách' }}</td>
+
+                                <td>{{ $item->type }}</td>
+                                <td>
+                                    @if ($item->status == 1)
+                                        <span class="badge bg-success">Hiển thị</span>
+                                    @else
+                                        <span class="badge bg-danger">Ẩn</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <a href="{{ route('admin.posts.edit', $item->id) }}"
+                                        class="btn btn-sm btn-warning">Sửa</a>
+                                    <form action="{{ route('admin.posts.destroy', $item->id) }}" method="POST"
+                                        class="d-inline" onsubmit="return confirm('Chắc chắn xóa?')">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-sm btn-danger">Xóa</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-muted">Không có dữ liệu bài viết</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-center mt-3">
+                {{ $list->links() }}
+            </div>
         </div>
     </div>
 @endsection

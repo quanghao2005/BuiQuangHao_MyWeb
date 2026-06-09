@@ -26,7 +26,7 @@ Route::get('test1', [ProductController::class, 'test1']);
 Route::get('test2', [ProductController::class, 'test2']);
 
 // ==========================================
-// Cấu hình các Route Quản trị Admin (Lab 06)
+// Cấu hình các Route Quản trị Admin (Lab 06 & Lab 07)
 // ==========================================
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -43,4 +43,3 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('posts', PostController::class);
 });
-    

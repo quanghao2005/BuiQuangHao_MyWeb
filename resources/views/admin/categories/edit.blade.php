@@ -1,0 +1,44 @@
+@extends('admin.layouts.admin')
+
+@section('content')
+    <div class="container-fluid mt-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 font-weight-bold text-primary">Chỉnh sửa Danh mục</h5>
+            </div>
+
+            <div class="card-body">
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form action="{{ route('admin.categories.update', $category->cateid) }}" method="POST">
+                    @csrf
+                    @method('PUT') <div class="mb-3">
+                        <label for="catename" class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('catename') is-invalid @enderror" id="catename"
+                            name="catename" value="{{ old('catename', $category->catename) }}"
+                            placeholder="Nhập tên danh mục..." required>
+
+                        @error('catename')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
+                        <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary px-4 ms-2">Hủy bỏ</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
