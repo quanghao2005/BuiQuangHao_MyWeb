@@ -28,8 +28,7 @@
                             <tr>
                                 <td>{{ $item->id }}</td>
                                 <td>
-                                    <img src="{{ $item->image ? asset('images/' . $item->image) : asset('images/default.png') }}"
-                                        width="80" height="50" style="object-fit: cover;">
+                                    <img src="{{ asset('images/banner1.jpg') }}" width="60">
                                 </td>
                                 <td class="text-start fw-bold">{{ $item->title }}</td>
 

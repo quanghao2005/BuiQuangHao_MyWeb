@@ -10,17 +10,17 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
+        // Danh sách các danh mục bạn muốn tạo
         $categories = ['Điện thoại', 'Laptop', 'Máy tính bảng', 'Phụ kiện', 'Đồng hồ', 'Tai nghe', 'Loa', 'Camera', 'Màn hình', 'Chuột'];
 
-        foreach ($categories as $index => $name) {
+        foreach ($categories as $name) {
             DB::table('categories')->insert([
-                'catename'    => $name,
-                'slug'        => Str::slug($name),
-                'status'      => rand(0, 1),
-                'sort_order'  => $index + 1,
-                'description' => fake()->sentence(10),
-                'created_at'  => now(),
-                'updated_at'  => now(),
+                'catename'   => $name,
+                'slug'       => Str::slug($name),
+                'image'      => null,
+                'status'     => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
     }

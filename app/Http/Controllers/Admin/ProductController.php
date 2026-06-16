@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
-use Illuminate\Support\Str; // Import thư viện Str để tự động tạo Slug
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -16,7 +16,6 @@ class ProductController extends Controller
      */
     public function index($limit = 10)
     {
-        // Sử dụng Eager Loading (with) để lấy dữ liệu từ bảng liên kết, tránh lỗi N+1 Query
         $list = Product::with(['category', 'brand'])
             ->orderBy('id', 'desc')
             ->paginate($limit);
@@ -29,7 +28,6 @@ class ProductController extends Controller
      */
     public function create()
     {
-        // Lấy danh sách danh mục và thương hiệu đang hiển thị (status = 1) để đổ vào dropdown
         $categories = Category::where('status', 1)->get();
         $brands = Brand::where('status', 1)->get();
 
@@ -41,25 +39,38 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        // THÊM: Kiểm tra trùng Slug ở đây để tránh lỗi màn hình đỏ
         $request->validate([
             'productname' => 'required|string|max:255',
+            'slug'        => 'required|string|max:255|unique:products,slug',
             'price'       => 'required|numeric|min:0',
             'cateid'      => 'required',
             'brandid'     => 'required',
+        ], [
+            'slug.unique' => 'Đường dẫn (Slug) này đã tồn tại, vui lòng nhập chữ khác (VD: iphone-12-pro)!'
         ]);
 
-        Product::create([
-            'productname' => $request->productname,
-            // Tự động chuyển "Tên SP" thành "ten-sp" để làm đường dẫn (slug)
-            'slug'        => $request->slug ?? Str::slug($request->productname),
-            'price'       => $request->price,
-            'cateid'      => $request->cateid,
-            'brandid'     => $request->brandid,
-            'status'      => $request->status ?? 1,
-            'image'       => $request->image ?? null,
-        ]);
+        try {
+            Product::create([
+                'productname'   => $request->productname,
+                'slug'          => $request->slug ?? Str::slug($request->productname),
+                'cateid'        => $request->cateid,
+                'brandid'       => $request->brandid,
+                'price'         => $request->price,
+                'pricediscount' => $request->pricediscount ?? 0,
+                'description'   => $request->description,
+                'status'        => $request->status ?? 1,
+                'image'         => $request->image ?? null,
+            ]);
 
-        return redirect()->route('admin.products.index')->with('success', 'Thêm sản phẩm thành công!');
+            return redirect()
+                ->route('admin.products.index')
+                ->with('success', 'Thêm sản phẩm thành công');
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -88,29 +99,53 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // THÊM: Kiểm tra các trường bắt buộc và chặn trùng Slug (loại trừ ID hiện tại)
         $request->validate([
             'productname' => 'required|string|max:255',
+            'slug'        => 'required|string|max:255|unique:products,slug,' . $id,
             'price'       => 'required|numeric|min:0',
-            'cateid'      => 'required',
             'brandid'     => 'required',
+        ], [
+            'slug.unique' => 'Đường dẫn (Slug) này đã bị trùng với một sản phẩm khác!'
         ]);
 
-        // Tìm sản phẩm cần sửa (Sẽ báo lỗi 404 nếu không tìm thấy)
-        $product = Product::findOrFail($id);
+        try {
+            // Bước 1 theo Lab: Kiểm tra thủ công (không dùng $request->validate) cho cateid
+            if (empty($request->cateid)) {
+                return back()
+                    ->withInput()
+                    ->with('error', 'Vui lòng chọn loại sản phẩm');
+            }
 
-        $product->update([
-            'productname' => $request->productname,
-            // Cập nhật lại slug nếu tên sản phẩm thay đổi
-            'slug'        => $request->slug ?? Str::slug($request->productname),
-            'price'       => $request->price,
-            'cateid'      => $request->cateid,
-            'brandid'     => $request->brandid,
-            'status'      => $request->status,
-            // Nếu có ảnh mới thì lấy ảnh mới, không thì giữ nguyên ảnh cũ trong DB
-            'image'       => $request->image ?? $product->image,
-        ]);
+            // Bước 2 theo Lab: Tìm sản phẩm
+            $product = Product::find($id);
 
-        return redirect()->route('admin.products.index')->with('success', 'Cập nhật sản phẩm thành công!');
+            if (!$product) {
+                return redirect()
+                    ->route('admin.products.index')
+                    ->with('error', 'Sản phẩm không tồn tại');
+            }
+
+            // Bước 3: Cập nhật dữ liệu
+            $product->update([
+                'productname'   => $request->productname,
+                'slug'          => $request->slug ?? Str::slug($request->productname), // THÊM: Cập nhật cả slug
+                'cateid'        => $request->cateid,
+                'brandid'       => $request->brandid,
+                'price'         => $request->price,
+                'pricediscount' => $request->pricediscount,
+                'status'        => $request->status,
+                'description'   => $request->description,
+            ]);
+
+            return redirect()
+                ->route('admin.products.index')
+                ->with('success', 'Cập nhật sản phẩm thành công');
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -118,10 +153,12 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        // Cách chuẩn của Eloquent để xóa dữ liệu
-        Product::findOrFail($id)->delete();
-
-        return redirect()->route('admin.products.index')->with('success', 'Đã xóa sản phẩm!');
+        try {
+            Product::findOrFail($id)->delete();
+            return redirect()->route('admin.products.index')->with('success', 'Đã xóa sản phẩm!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Lỗi khi xóa sản phẩm: ' . $e->getMessage());
+        }
     }
 
     // ================== CÁC HÀM TEST CỦA BẠN ==================

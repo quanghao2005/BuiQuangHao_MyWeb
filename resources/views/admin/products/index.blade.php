@@ -4,26 +4,27 @@
 @section('content')
     <div class="container-fluid pt-4 px-4">
         <div class="bg-light rounded p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="mb-0 text-primary fw-bold text-uppercase">Danh sách Sản phẩm</h5>
-                <a href="{{ route('admin.products.create') }}" class="btn btn-sm btn-success px-3">
-                    <i class="bi bi-plus-lg me-2"></i>Thêm mới
-                </a>
-            </div>
 
+            {{-- Tiêu đề và nút thêm mới theo đúng hướng dẫn Lab --}}
+            <h2 class="mb-3 text-uppercase fw-bold">Danh sách Sản phẩm</h2>
+            <a href="{{ route('admin.products.create') }}" class="btn btn-primary mb-3">
+                <i class="bi bi-plus-circle"></i> Thêm mới
+            </a>
+
+            {{-- Hiển thị thông báo thành công từ session flash 'success' --}}
             @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <div class="alert alert-success">
                     {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
+            {{-- Table hiển thị dữ liệu --}}
             <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle">
                     <thead class="table-dark text-center">
                         <tr>
                             <th>STT</th>
-                            <th>Ảnh</th>
+                            <th style="width: 100px;">Ảnh</th>
                             <th>Tên Sản Phẩm</th>
                             <th>Danh mục</th>
                             <th>Thương hiệu</th>
@@ -36,8 +37,8 @@
                             <tr>
                                 <td class="text-center">{{ $list->firstItem() + $key }}</td>
                                 <td class="text-center">
-                                    <img src="{{ asset('images/' . ($item->image ?? 'default.png')) }}" width="60"
-                                        alt="img" style="object-fit: cover;">
+                                    <img src="{{ asset('images/banner1.jpg') }}" alt="Banner 1"
+                                        class="img-fluid rounded mb-3">
                                 </td>
                                 <td class="fw-bold">{{ $item->productname }}</td>
 
@@ -53,7 +54,8 @@
                                     </a>
                                     <form action="{{ route('admin.products.destroy', $item->id) }}" method="POST"
                                         class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
-                                        @csrf @method('DELETE')
+                                        @csrf
+                                        @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger">
                                             <i class="bi bi-trash"></i> Xóa
                                         </button>
@@ -69,9 +71,11 @@
                 </table>
             </div>
 
+            {{-- Phân trang --}}
             <div class="d-flex justify-content-center mt-3">
                 {{ $list->links() }}
             </div>
+
         </div>
     </div>
 @endsection
