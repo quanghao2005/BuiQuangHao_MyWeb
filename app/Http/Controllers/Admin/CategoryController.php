@@ -34,19 +34,38 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'catename' => 'required|string|max:255|unique:categories,catename',
-        ], [
-            'catename.unique' => 'Tên danh mục này đã tồn tại, vui lòng nhập tên khác!',
-            'catename.required' => 'Vui lòng nhập tên danh mục.'
-        ]);
+        $request->validate(
+            [
+                'catename' => 'required|min:3|max:100|unique:categories,catename',
+                'slug' => [
+                    'required',
+                    'min:5',
+                    'max:150',
+                    'unique:categories,slug',
+                    'regex:/^[a-z0-9\-]+$/'
+                ],
+                'status' => 'required|in:0,1'
+            ],
+            [
+                'required' => ':attribute không được để trống.',
+                'min' => ':attribute phải từ :min ký tự trở lên.',
+                'max' => ':attribute không vượt quá :max ký tự.',
+                'unique' => ':attribute đã tồn tại.',
+                'slug.regex' => ':attribute chỉ được chứa chữ thường, số và dấu gạch ngang (-).',
+                'status.in' => ':attribute không hợp lệ.'
+            ],
+            [
+                'catename' => 'Tên loại',
+                'slug' => 'Đường dẫn (Slug)',
+                'status' => 'Trạng thái'
+            ]
+        );
 
         try {
-            // Đã bỏ // và thay bằng code thêm mới thực sự
             Category::create([
                 'catename' => $request->catename,
-                'slug'     => Str::slug($request->catename),
-                'status'   => 1 // Mặc định hiển thị
+                'slug'     => $request->slug,
+                'status'   => $request->status
             ]);
 
             return redirect()->route('admin.categories.index')->with('success', 'Thêm thành công!');
@@ -80,11 +99,36 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'catename' => 'required|string|max:255|unique:categories,catename,' . $id . ',cateid',
-        ], [
-            'catename.unique' => 'Tên danh mục này đã bị trùng với một danh mục khác!',
-        ]);
+        // Validate dữ liệu
+        $request->validate(
+            // Param 1: Rules - khai báo các quy tắc kiểm tra dữ liệu
+            [
+                'catename' => 'required|min:3|max:100|unique:categories,catename,' . $id . ',cateid',
+                'slug' => [
+                    'required',
+                    'min:5',
+                    'max:150',
+                    'regex:/^[a-z0-9-]+$/',
+                    \Illuminate\Validation\Rule::unique('categories', 'slug')->ignore($id, 'cateid'),
+                ],
+                'status' => 'required|in:0,1'
+            ],
+            // Param 2: Messages - tùy chỉnh nội dung thông báo lỗi
+            [
+                'required' => ':attribute không được để trống.',
+                'min' => ':attribute phải từ :min ký tự trở lên.',
+                'max' => ':attribute không vượt quá :max ký tự.',
+                'unique' => ':attribute đã tồn tại.',
+                'slug.regex' => ':attribute chỉ được chứa chữ thường, số và dấu gạch ngang (-).',
+                'status.in' => ':attribute không hợp lệ.'
+            ],
+            // Param 3: Attributes - tên hiển thị của các trường
+            [
+                'catename' => 'Tên loại',
+                'slug' => 'Đường dẫn (Slug)',
+                'status' => 'Trạng thái'
+            ]
+        );
 
         try {
             // Tìm danh mục cần sửa và cập nhật dữ liệu mới
@@ -92,7 +136,8 @@ class CategoryController extends Controller
 
             $category->update([
                 'catename' => $request->catename,
-                'slug'     => Str::slug($request->catename),
+                'slug'     => $request->slug,
+                'status'   => $request->status ?? $category->status,
             ]);
 
             return redirect()->route('admin.categories.index')->with('success', 'Cập nhật thành công!');

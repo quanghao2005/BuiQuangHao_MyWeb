@@ -5,6 +5,10 @@
     <div class="container-fluid pt-4 px-4">
         <div class="bg-light rounded p-4">
             <h5 class="mb-4 text-primary text-uppercase fw-bold">Thêm Thương Hiệu Mới</h5>
+            
+            {{-- Gọi component alert --}}
+            <x-admin.alert />
+
             <form action="{{ route('admin.brands.store') }}" method="POST">
                 @csrf
                 <div class="mb-3">
@@ -14,11 +18,15 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Trạng thái</label>
+                    <label class="form-label fw-bold">Trạng thái <span class="text-danger">*</span></label>
                     <select name="status" class="form-select">
-                        <option value="1">Hiển thị</option>
-                        <option value="0">Ẩn</option>
+                        <option value="">-- Chọn trạng thái --</option>
+                        <option value="1" {{ old('status') === '1' ? 'selected' : '' }}>Hiển thị</option>
+                        <option value="0" {{ old('status') === '0' ? 'selected' : '' }}>Ẩn</option>
                     </select>
+                    @error('status')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <button type="submit" class="btn btn-success px-4 mt-3">Lưu dữ liệu</button>

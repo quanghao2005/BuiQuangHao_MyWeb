@@ -7,6 +7,9 @@
         <div class="bg-light rounded h-100 p-4">
             <h5 class="mb-4 text-primary text-uppercase fw-bold">Thêm Bài Viết Mới</h5>
 
+            {{-- Gọi component alert --}}
+            <x-admin.alert />
+
             <form action="{{ route('admin.posts.store') }}" method="POST">
                 @csrf
 
@@ -52,12 +55,16 @@
                     </div>
 
                     <div class="col-md-4 mb-4">
-                        <label class="form-label fw-bold">Trạng thái</label>
-                        <select name="status" class="form-select">
-                            <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Đăng bài (Hiển thị)
+                        <label class="form-label fw-bold">Trạng thái <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select @error('status') is-invalid @enderror">
+                            <option value="">-- Chọn trạng thái --</option>
+                            <option value="1" {{ old('status') === '1' ? 'selected' : '' }}>Đăng bài (Hiển thị)
                             </option>
-                            <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Bản nháp (Ẩn)</option>
+                            <option value="0" {{ old('status') === '0' ? 'selected' : '' }}>Bản nháp (Ẩn)</option>
                         </select>
+                        @error('status')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 

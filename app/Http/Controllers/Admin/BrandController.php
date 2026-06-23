@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\BrandRequest;
 use App\Models\Brand;
-use Illuminate\Support\Str; // Import để dùng Str::slug()
+use Illuminate\Support\Str;
 
 class BrandController extends Controller
 {
@@ -32,21 +33,22 @@ class BrandController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(BrandRequest $request)
     {
-        $request->validate([
-            'brandname' => 'required|string|max:255',
-        ]);
 
-        Brand::create([
-            'brandname' => $request->brandname,
-            // Tự động tạo slug nếu người dùng bỏ trống
-            'slug'      => $request->slug ?? Str::slug($request->brandname),
-            'image'     => $request->image ?? null,
-            'status'    => $request->status ?? 1,
-        ]);
+        try {
+            Brand::create([
+                'brandname' => $request->brandname,
+                // Tự động tạo slug nếu người dùng bỏ trống
+                'slug'      => $request->slug ?? Str::slug($request->brandname),
+                'image'     => $request->image ?? null,
+                'status'    => $request->status ?? 1,
+            ]);
 
-        return redirect()->route('admin.brands.index')->with('success', 'Thêm thương hiệu thành công!');
+            return redirect()->route('admin.brands.index')->with('success', 'Thêm thương hiệu thành công!');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Lỗi khi thêm thương hiệu: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -71,23 +73,24 @@ class BrandController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(BrandRequest $request, string $id)
     {
-        $request->validate([
-            'brandname' => 'required|string|max:255',
-        ]);
 
-        // Tìm thương hiệu theo 'brandid' và cập nhật
-        $brand = Brand::where('brandid', $id)->firstOrFail();
+        try {
+            // Tìm thương hiệu theo 'brandid' và cập nhật
+            $brand = Brand::where('brandid', $id)->firstOrFail();
 
-        $brand->update([
-            'brandname' => $request->brandname,
-            'slug'      => $request->slug ?? Str::slug($request->brandname),
-            'image'     => $request->image ?? $brand->image,
-            'status'    => $request->status,
-        ]);
+            $brand->update([
+                'brandname' => $request->brandname,
+                'slug'      => $request->slug ?? Str::slug($request->brandname),
+                'image'     => $request->image ?? $brand->image,
+                'status'    => $request->status,
+            ]);
 
-        return redirect()->route('admin.brands.index')->with('success', 'Cập nhật thương hiệu thành công!');
+            return redirect()->route('admin.brands.index')->with('success', 'Cập nhật thương hiệu thành công!');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Lỗi khi cập nhật thương hiệu: ' . $e->getMessage());
+        }
     }
 
     /**

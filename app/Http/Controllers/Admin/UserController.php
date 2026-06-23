@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\UserRequest;
 use App\Models\User; // Gọi Model User
 
 class UserController extends Controller
@@ -24,29 +25,25 @@ class UserController extends Controller
         return view('admin.users.create');
     }
 
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        // 1. Xác thực dữ liệu
-        $request->validate([
-            'fullname' => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email', // Bắt buộc không được trùng email
-            'password' => 'required|string|min:6',
-        ], [
-            'fullname.required' => 'Vui lòng nhập họ tên.',
-            'email.required'    => 'Vui lòng nhập email.',
-            'email.unique'      => 'Email này đã tồn tại trong hệ thống.',
-            'password.required' => 'Vui lòng nhập mật khẩu.',
-            'password.min'      => 'Mật khẩu phải chứa ít nhất 6 ký tự.'
-        ]);
+        try {
+            // 2. Thêm vào database bằng Eloquent
+            User::create([
+                'fullname' => $request->fullname,
+                'email'    => $request->email,
+                'password' => bcrypt($request->password), // Phải mã hóa mật khẩu
+                'username' => 'user_' . time(), // Tạm tạo giá trị ngẫu nhiên do form chưa có
+                'phone'    => '09' . rand(10000000, 99999999), // Tạm tạo số điện thoại ngẫu nhiên
+                'gender'   => 1, // Mặc định (1: Nam)
+                'role'     => 2, // Mặc định (2: Nhân viên)
+                'status'   => 1, // Mặc định
+            ]);
 
-        // 2. Thêm vào database bằng Eloquent
-        User::create([
-            'fullname' => $request->fullname,
-            'email'    => $request->email,
-            'password' => bcrypt($request->password), // Phải mã hóa mật khẩu
-        ]);
-
-        return redirect()->route('admin.users.index')->with('success', 'Thêm người dùng thành công!');
+            return redirect()->route('admin.users.index')->with('success', 'Thêm người dùng thành công!');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Lỗi khi thêm người dùng: ' . $e->getMessage());
+        }
     }
 
     public function show(string $id)
@@ -61,33 +58,26 @@ class UserController extends Controller
         return view('admin.users.edit', compact('user'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(UserRequest $request, string $id)
     {
-        // 1. Xác thực dữ liệu
-        $request->validate([
-            'fullname' => 'required|string|max:255',
-            // Loại trừ email của chính user này khi check unique
-            'email'    => 'required|email|unique:users,email,' . $id,
-        ], [
-            'fullname.required' => 'Vui lòng nhập họ tên.',
-            'email.required'    => 'Vui lòng nhập email.',
-            'email.unique'      => 'Email này đã tồn tại trong hệ thống.',
-        ]);
+        try {
+            $data = [
+                'fullname' => $request->fullname,
+                'email'    => $request->email,
+            ];
 
-        $data = [
-            'fullname' => $request->fullname,
-            'email'    => $request->email,
-        ];
+            // Nếu người dùng nhập mật khẩu mới thì mới cập nhật mật khẩu
+            if ($request->filled('password')) {
+                $data['password'] = bcrypt($request->password);
+            }
 
-        // Nếu người dùng nhập mật khẩu mới thì mới cập nhật mật khẩu
-        if ($request->filled('password')) {
-            $data['password'] = bcrypt($request->password);
+            // 2. Cập nhật bằng Eloquent
+            User::where('id', $id)->update($data);
+
+            return redirect()->route('admin.users.index')->with('success', 'Cập nhật thông tin thành công!');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Lỗi khi cập nhật người dùng: ' . $e->getMessage());
         }
-
-        // 2. Cập nhật bằng Eloquent
-        User::where('id', $id)->update($data);
-
-        return redirect()->route('admin.users.index')->with('success', 'Cập nhật thông tin thành công!');
     }
 
     public function destroy(string $id)

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\ProductRequest;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
@@ -37,18 +38,8 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        // THÊM: Kiểm tra trùng Slug ở đây để tránh lỗi màn hình đỏ
-        $request->validate([
-            'productname' => 'required|string|max:255',
-            'slug'        => 'required|string|max:255|unique:products,slug',
-            'price'       => 'required|numeric|min:0',
-            'cateid'      => 'required',
-            'brandid'     => 'required',
-        ], [
-            'slug.unique' => 'Đường dẫn (Slug) này đã tồn tại, vui lòng nhập chữ khác (VD: iphone-12-pro)!'
-        ]);
 
         try {
             Product::create([
@@ -97,17 +88,8 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ProductRequest $request, string $id)
     {
-        // THÊM: Kiểm tra các trường bắt buộc và chặn trùng Slug (loại trừ ID hiện tại)
-        $request->validate([
-            'productname' => 'required|string|max:255',
-            'slug'        => 'required|string|max:255|unique:products,slug,' . $id,
-            'price'       => 'required|numeric|min:0',
-            'brandid'     => 'required',
-        ], [
-            'slug.unique' => 'Đường dẫn (Slug) này đã bị trùng với một sản phẩm khác!'
-        ]);
 
         try {
             // Bước 1 theo Lab: Kiểm tra thủ công (không dùng $request->validate) cho cateid

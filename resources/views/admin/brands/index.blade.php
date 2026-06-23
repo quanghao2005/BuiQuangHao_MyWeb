@@ -19,6 +19,7 @@
                             <th style="width: 70px;">STT</th>
                             <th style="width: 120px;">ID</th>
                             <th>Tên thương hiệu</th>
+                            <th style="width: 120px;">Hình ảnh</th>
                             <th>Slug</th>
                             <th style="width: 150px;">Trạng thái</th>
                             <th style="width: 150px;">Hành động</th>
@@ -28,8 +29,15 @@
                         @forelse ($list as $key => $item)
                             <tr>
                                 <td class="text-center fw-bold">{{ $list->firstItem() + $key }}</td>
-                                <td class="text-center fw-bold text-secondary">{{ $item->id }}</td>
+                                <td class="text-center fw-bold text-secondary">{{ $item->brandid }}</td>
                                 <td class="fw-bold">{{ $item->brandname }}</td>
+                                <td class="text-center">
+                                    @if ($item->image)
+                                        <img src="{{ asset('images/' . $item->image) }}" width="60" alt="{{ $item->brandname }}">
+                                    @else
+                                        <img src="{{ asset('images/banner1.jpg') }}" width="60" alt="Default">
+                                    @endif
+                                </td>
                                 <td><code>{{ $item->slug }}</code></td>
                                 <td class="text-center">
                                     @if ($item->status == 1)
@@ -51,7 +59,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted">Không có dữ liệu</td>
+                                <td colspan="7" class="text-center text-muted">Không có dữ liệu</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -85,12 +85,18 @@
                             <label class="form-label d-block fw-bold">Trạng thái</label>
 
                             <input type="radio" class="btn-check" name="status" id="active" value="1"
-                                {{ old('status', '1') == '1' ? 'checked' : '' }}>
+                                {{ old('status') === '1' ? 'checked' : '' }}>
                             <label class="btn btn-outline-success" for="active">Hiển thị</label>
 
                             <input type="radio" class="btn-check" name="status" id="inactive" value="0"
-                                {{ old('status') == '0' ? 'checked' : '' }}>
+                                {{ old('status') === '0' ? 'checked' : '' }}>
                             <label class="btn btn-outline-danger" for="inactive">Ẩn</label>
+
+                            <div class="mt-1">
+                                @error('status')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
 
                         <div class="mb-3">

@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Post;
-use App\Models\User; // Cần import User để lấy danh sách tác giả
+use Illuminate\Http\Request;
+use App\Http\Requests\Admin\PostRequest;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -15,8 +16,6 @@ class PostController extends Controller
      */
     public function index($limit = 10)
     {
-        // SỬA: Bỏ cột 'type' (không tồn tại trong DB) 
-        // SỬA: Đảm bảo các cột như 'user_id' đúng với tên cột trong DB (xem lại phpMyAdmin của bạn)
         $list = Post::with(['user:id,fullname'])
             ->select('id', 'title', 'image', 'status', 'user_id', 'created_at')
             ->orderBy('id', 'desc')
@@ -34,28 +33,22 @@ class PostController extends Controller
         $users = User::select('id', 'fullname')->get();
         return view('admin.posts.create', compact('users'));
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(PostRequest $request)
     {
-        $request->validate([
-            'title'  => 'required|string|max:255',
-            'userid' => 'required|exists:users,id', // Đảm bảo userid phải tồn tại trong bảng users
-        ]);
+        try {
+            Post::create([
+                'title'   => $request->title,
+                'slug'    => $request->slug ?? Str::slug($request->title), // Tự động tạo slug nếu trống
+                'content' => $request->detail ?? 'Nội dung mặc định', // Cột đúng trong DB là content
+                'status'  => $request->status ?? 1,
+                'user_id' => $request->userid, // Cột đúng trong DB là user_id
+                'image'   => $request->image ?? 'default.jpg', // Không được null
+            ]);
 
-        Post::create([
-            'title'  => $request->title,
-            'slug'   => $request->slug ?? Str::slug($request->title), // Tự động tạo slug nếu trống
-            'detail' => $request->detail ?? '',
-            'type'   => $request->type ?? 'normal',
-            'status' => $request->status ?? 1,
-            'userid' => $request->userid,
-            'image'  => $request->image ?? null,
-        ]);
-
-        return redirect()->route('admin.posts.index')->with('success', 'Thêm bài viết thành công!');
+            return redirect()->route('admin.posts.index')->with('success', 'Thêm bài viết thành công!');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Lỗi khi thêm bài viết: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -81,27 +74,25 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(PostRequest $request, string $id)
     {
-        $request->validate([
-            'title'  => 'required|string|max:255',
-            'userid' => 'required|exists:users,id',
-        ]);
+        try {
+            $post = Post::findOrFail($id);
 
-        $post = Post::findOrFail($id);
+            $post->update([
+                'title'   => $request->title,
+                'slug'    => $request->slug ?? Str::slug($request->title),
+                'content' => $request->detail ?? $post->content,
+                'status'  => $request->status ?? $post->status,
+                'user_id' => $request->userid,
+                // Giữ lại ảnh cũ nếu không có ảnh mới cập nhật
+                'image'   => $request->image ?? $post->image,
+            ]);
 
-        $post->update([
-            'title'  => $request->title,
-            'slug'   => $request->slug ?? Str::slug($request->title),
-            'detail' => $request->detail ?? $post->detail,
-            'type'   => $request->type ?? $post->type,
-            'status' => $request->status,
-            'userid' => $request->userid,
-            // Giữ lại ảnh cũ nếu không có ảnh mới cập nhật
-            'image'  => $request->image ?? $post->image,
-        ]);
-
-        return redirect()->route('admin.posts.index')->with('success', 'Cập nhật bài viết thành công!');
+            return redirect()->route('admin.posts.index')->with('success', 'Cập nhật bài viết thành công!');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Lỗi khi cập nhật bài viết: ' . $e->getMessage());
+        }
     }
 
     /**
