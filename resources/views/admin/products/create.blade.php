@@ -24,7 +24,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('admin.products.store') }}" method="POST">
+            <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
                     <div class="col-md-6">
@@ -102,6 +102,24 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Mô tả sản phẩm</label>
                             <textarea name="description" rows="4" class="form-control">{{ old('description') }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3 img-group">
+                            <label class="form-label fw-bold">Hình ảnh chính</label>
+                            <input type="file" name="img" class="form-control img-input">
+                            <div class="img-preview mt-2"></div>
+                            @error('img')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3 img-group">
+                            <label class="form-label fw-bold">Hình ảnh phụ</label>
+                            <input type="file" name="imgs[]" class="form-control img-input" multiple>
+                            <div class="img-preview mt-2"></div>
+                            @error('imgs.*')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
                 </div>

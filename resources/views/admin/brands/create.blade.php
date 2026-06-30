@@ -9,12 +9,26 @@
             {{-- Gọi component alert --}}
             <x-admin.alert />
 
-            <form action="{{ route('admin.brands.store') }}" method="POST">
+            <form action="{{ route('admin.brands.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
                     <label class="form-label fw-bold">Tên thương hiệu <span class="text-danger">*</span></label>
                     <input type="text" name="brandname" class="form-control" placeholder="Nhập tên thương hiệu..."
                         required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Đường dẫn (Slug) <span class="text-danger">*</span></label>
+                    <input type="text" name="slug" class="form-control" placeholder="Nhập đường dẫn tĩnh..." required>
+                </div>
+
+                <div class="mb-3 img-group">
+                    <label class="form-label fw-bold">Hình ảnh</label>
+                    <input type="file" name="img" class="form-control img-input">
+                    <div class="img-preview mt-2"></div>
+                    @error('img')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <div class="mb-3">

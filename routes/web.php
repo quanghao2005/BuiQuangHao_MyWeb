@@ -29,6 +29,11 @@ Route::get('test2', [ProductController::class, 'test2']);
 // Cấu hình các Route Quản trị Admin (Lab 06 & Lab 07)
 // ==========================================
 Route::prefix('admin')->name('admin.')->group(function () {
+    
+    // Redirect /admin to /admin/dashboard
+    Route::get('/', function () {
+        return redirect()->route('admin.dashboard');
+    });
 
     // Dashboard
     Route::get('/dashboard', function () {
@@ -39,6 +44,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Tự động sinh ra các route: index, create, store, show, edit, update, destroy
     Route::resource('categories', CategoryController::class);
     Route::resource('brands', BrandController::class);
+    
+    // Custom route for deleting sub images
+    Route::delete('products/delete-image/{id}', [ProductController::class, 'deleteImage']);
     Route::resource('products', ProductController::class);
     Route::resource('users', UserController::class);
     Route::resource('posts', PostController::class);

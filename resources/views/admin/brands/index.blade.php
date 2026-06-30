@@ -33,7 +33,7 @@
                                 <td class="fw-bold">{{ $item->brandname }}</td>
                                 <td class="text-center">
                                     @if ($item->image)
-                                        <img src="{{ asset('images/' . $item->image) }}" width="60" alt="{{ $item->brandname }}">
+                                        <img src="{{ asset('storage/brands/' . $item->image) }}" width="60" alt="{{ $item->brandname }}">
                                     @else
                                         <img src="{{ asset('images/banner1.jpg') }}" width="60" alt="Default">
                                     @endif

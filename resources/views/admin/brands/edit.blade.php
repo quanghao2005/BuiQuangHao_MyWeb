@@ -7,7 +7,7 @@
         <div class="bg-light rounded h-100 p-4">
             <h5 class="mb-4 text-primary text-uppercase fw-bold">Cập Nhật Thương Hiệu</h5>
 
-            <form action="{{ route('admin.brands.update', $brand->id) }}" method="POST">
+            <form action="{{ route('admin.brands.update', $brand->brandid) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT') <div class="mb-3">
                     <label class="form-label fw-bold">Tên thương hiệu <span class="text-danger">*</span></label>
@@ -23,9 +23,17 @@
                     <input type="text" name="slug" class="form-control" value="{{ old('slug', $brand->slug) }}">
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Hình ảnh (URL hoặc Tên file)</label>
-                    <input type="text" name="image" class="form-control" value="{{ old('image', $brand->image) }}">
+                <div class="mb-3 img-group">
+                    <label class="form-label fw-bold">Hình ảnh</label>
+                    <input type="file" name="img" class="form-control img-input">
+                    <div class="img-preview mt-2">
+                        @if ($brand->image)
+                            <img src="{{ asset('storage/brands/' . $brand->image) }}" width="150" class="img-thumbnail" style="margin: 5px;">
+                        @endif
+                    </div>
+                    @error('img')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <div class="mb-4">

@@ -24,7 +24,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('admin.products.update', $product->id) }}" method="POST">
+            <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="row">
@@ -102,6 +102,37 @@
                             <label class="form-label fw-bold">Mô tả sản phẩm</label>
                             <textarea name="description" rows="4" class="form-control">{{ old('description', $product->description) }}</textarea>
                         </div>
+
+                        <div class="mb-3 img-group">
+                            <label class="form-label fw-bold">Hình ảnh chính</label>
+                            <input type="file" name="img" class="form-control img-input">
+                            <div class="img-preview mt-2">
+                                @if ($product->image)
+                                    <img src="{{ asset('storage/products/' . $product->image) }}" class="img-thumbnail" width="120">
+                                @endif
+                            </div>
+                            @error('img')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3 img-group">
+                            <label class="form-label fw-bold">Hình ảnh phụ</label>
+                            <input type="file" name="imgs[]" class="form-control img-input" multiple>
+                            <div class="img-preview mt-2 d-flex flex-wrap" id="sub-images-container">
+                                @foreach ($product->images as $image)
+                                    <div class="position-relative me-2 mb-2 sub-image-item" id="img-{{ $image->id }}">
+                                        <img src="{{ asset('storage/products/' . $image->image) }}" class="img-thumbnail" width="100">
+                                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0 px-1 delete-sub-img" data-id="{{ $image->id }}">
+                                            &times;
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+                            @error('imgs.*')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 
@@ -112,3 +143,32 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.querySelectorAll('.delete-sub-img').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if(!confirm('Xóa ảnh phụ này?')) return;
+            const id = this.getAttribute('data-id');
+            const url = '{{ url("admin/products/delete-image") }}/' + id;
+            
+            fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('img-' + id).remove();
+                } else {
+                    alert('Lỗi khi xóa ảnh');
+                }
+            })
+            .catch(error => console.error(error));
+        });
+    });
+</script>
+@endpush

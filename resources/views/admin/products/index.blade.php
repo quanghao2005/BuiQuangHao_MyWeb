@@ -37,8 +37,11 @@
                             <tr>
                                 <td class="text-center">{{ $list->firstItem() + $key }}</td>
                                 <td class="text-center">
-                                    <img src="{{ asset('images/banner1.jpg') }}" alt="Banner 1"
-                                        class="img-fluid rounded mb-3">
+                                    @if ($item->image)
+                                        <img src="{{ asset('storage/products/' . $item->image) }}" alt="{{ $item->productname }}" class="img-fluid rounded mb-3" style="max-height: 80px;">
+                                    @else
+                                        <img src="{{ asset('images/banner1.jpg') }}" alt="Default" class="img-fluid rounded mb-3">
+                                    @endif
                                 </td>
                                 <td class="fw-bold">{{ $item->productname }}</td>
 

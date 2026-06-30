@@ -32,7 +32,7 @@ class ProductRequest extends FormRequest
                 Rule::unique('products', 'slug')->ignore($id),
                 'regex:/^[a-zA-Z0-9\-\_]+$/',
             ],
-            'price' => 'required|numeric|min:0|max:10000000',
+            'price' => 'required|numeric|min:0|max:9999999',
             'pricediscount' => 'nullable|numeric|min:0|lte:price',
             'status' => 'required|in:0,1',
             'cateid' => 'required|exists:categories,cateid',
@@ -41,6 +41,21 @@ class ProductRequest extends FormRequest
                 'nullable',
                 'string',
                 'not_regex:/[@!$^]/'
+            ],
+            'img' => [
+                $id ? 'nullable' : 'required',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:200',
+            ],
+            'imgs' => [
+                'nullable',
+                'array',
+            ],
+            'imgs.*' => [
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:200',
             ],
         ];
     }
@@ -58,7 +73,13 @@ class ProductRequest extends FormRequest
             'lte' => ':attribute không được lớn hơn Giá.',
             'in' => ':attribute không hợp lệ.',
             'exists' => ':attribute không tồn tại trong hệ thống.',
-            'not_regex' => ':attribute không được chứa các ký tự đặc biệt (@, !, $, ^).'
+            'not_regex' => ':attribute không được chứa các ký tự đặc biệt (@, !, $, ^).',
+            'img.image' => ':attribute phải là hình ảnh.',
+            'img.mimes' => ':attribute chỉ chấp nhận định dạng: jpg, jpeg, png, webp.',
+            'img.max' => ':attribute không vượt quá 200 KB.',
+            'imgs.*.image' => 'Ảnh phụ phải là hình ảnh.',
+            'imgs.*.mimes' => 'Ảnh phụ chỉ chấp nhận định dạng: jpg, jpeg, png, webp.',
+            'imgs.*.max' => 'Ảnh phụ không vượt quá 200 KB.',
         ];
     }
 
@@ -73,6 +94,8 @@ class ProductRequest extends FormRequest
             'brandid' => 'Thương hiệu',
             'status' => 'Trạng thái',
             'description' => 'Mô tả',
+            'img' => 'Hình ảnh chính',
+            'imgs' => 'Hình ảnh phụ',
         ];
     }
 }

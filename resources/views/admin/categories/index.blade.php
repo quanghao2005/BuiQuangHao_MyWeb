@@ -37,7 +37,11 @@
                             <tr>
                                 <td class="text-center fw-bold">{{ $list->firstItem() + $key }}</td>
                                 <td class="text-center">
-                                    <img src="{{ asset('images/banner1.jpg') }}" width="60">
+                                    @if ($item->image)
+                                        <img src="{{ asset('storage/categories/' . $item->image) }}" width="60" alt="{{ $item->catename }}">
+                                    @else
+                                        <img src="{{ asset('images/banner1.jpg') }}" width="60" alt="Default">
+                                    @endif
                                 </td>
                                 <td class="text-center text-secondary fw-bold">{{ $item->cateid }}</td>
                                 <td class="fw-bold text-dark">{{ $item->catename }}</td>

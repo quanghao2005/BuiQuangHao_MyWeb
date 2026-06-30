@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Admin\BrandRequest;
 use App\Models\Brand;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class BrandController extends Controller
 {
@@ -37,11 +38,17 @@ class BrandController extends Controller
     {
 
         try {
+            $fileName = null;
+            if ($request->hasFile('img')) {
+                $file = $request->file('img');
+                $fileName = Str::slug($request->brandname) . '-' . time() . '.' . $file->extension();
+                $file->storeAs('brands', $fileName, 'public');
+            }
+
             Brand::create([
                 'brandname' => $request->brandname,
-                // Tự động tạo slug nếu người dùng bỏ trống
                 'slug'      => $request->slug ?? Str::slug($request->brandname),
-                'image'     => $request->image ?? null,
+                'image'     => $fileName,
                 'status'    => $request->status ?? 1,
             ]);
 
@@ -80,10 +87,20 @@ class BrandController extends Controller
             // Tìm thương hiệu theo 'brandid' và cập nhật
             $brand = Brand::where('brandid', $id)->firstOrFail();
 
+            $fileName = $brand->image;
+            if ($request->hasFile('img')) {
+                if ($fileName) {
+                    Storage::disk('public')->delete('brands/' . $fileName);
+                }
+                $file = $request->file('img');
+                $fileName = Str::slug($request->brandname) . '-' . time() . '.' . $file->extension();
+                $file->storeAs('brands', $fileName, 'public');
+            }
+
             $brand->update([
                 'brandname' => $request->brandname,
                 'slug'      => $request->slug ?? Str::slug($request->brandname),
-                'image'     => $request->image ?? $brand->image,
+                'image'     => $fileName,
                 'status'    => $request->status,
             ]);
 

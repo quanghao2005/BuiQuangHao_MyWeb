@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use Illuminate\Support\Str; // Import thư viện tạo slug
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -44,6 +46,12 @@ class CategoryController extends Controller
                     'unique:categories,slug',
                     'regex:/^[a-z0-9\-]+$/'
                 ],
+                'img' => [
+                    'nullable',
+                    'image',
+                    'mimes:jpg,jpeg,png,webp',
+                    'max:200'
+                ],
                 'status' => 'required|in:0,1'
             ],
             [
@@ -52,19 +60,31 @@ class CategoryController extends Controller
                 'max' => ':attribute không vượt quá :max ký tự.',
                 'unique' => ':attribute đã tồn tại.',
                 'slug.regex' => ':attribute chỉ được chứa chữ thường, số và dấu gạch ngang (-).',
-                'status.in' => ':attribute không hợp lệ.'
+                'status.in' => ':attribute không hợp lệ.',
+                'img.image' => ':attribute phải là hình ảnh.',
+                'img.mimes' => ':attribute chỉ chấp nhận định dạng: jpg, jpeg, png, webp.',
+                'img.max' => ':attribute không vượt quá 200 KB.',
             ],
             [
                 'catename' => 'Tên loại',
                 'slug' => 'Đường dẫn (Slug)',
+                'img' => 'Hình ảnh',
                 'status' => 'Trạng thái'
             ]
         );
 
         try {
+            $fileName = null;
+            if ($request->hasFile('img')) {
+                $file = $request->file('img');
+                $fileName = Str::slug($request->catename) . '-' . time() . '.' . $file->extension();
+                $file->storeAs('categories', $fileName, 'public');
+            }
+
             Category::create([
                 'catename' => $request->catename,
                 'slug'     => $request->slug,
+                'image'    => $fileName,
                 'status'   => $request->status
             ]);
 
@@ -109,7 +129,13 @@ class CategoryController extends Controller
                     'min:5',
                     'max:150',
                     'regex:/^[a-z0-9-]+$/',
-                    \Illuminate\Validation\Rule::unique('categories', 'slug')->ignore($id, 'cateid'),
+                    Rule::unique('categories', 'slug')->ignore($id, 'cateid'),
+                ],
+                'img' => [
+                    'nullable',
+                    'image',
+                    'mimes:jpg,jpeg,png,webp',
+                    'max:200'
                 ],
                 'status' => 'required|in:0,1'
             ],
@@ -120,12 +146,16 @@ class CategoryController extends Controller
                 'max' => ':attribute không vượt quá :max ký tự.',
                 'unique' => ':attribute đã tồn tại.',
                 'slug.regex' => ':attribute chỉ được chứa chữ thường, số và dấu gạch ngang (-).',
-                'status.in' => ':attribute không hợp lệ.'
+                'status.in' => ':attribute không hợp lệ.',
+                'img.image' => ':attribute phải là hình ảnh.',
+                'img.mimes' => ':attribute chỉ chấp nhận định dạng: jpg, jpeg, png, webp.',
+                'img.max' => ':attribute không vượt quá 200 KB.',
             ],
             // Param 3: Attributes - tên hiển thị của các trường
             [
                 'catename' => 'Tên loại',
                 'slug' => 'Đường dẫn (Slug)',
+                'img' => 'Hình ảnh',
                 'status' => 'Trạng thái'
             ]
         );
@@ -134,9 +164,20 @@ class CategoryController extends Controller
             // Tìm danh mục cần sửa và cập nhật dữ liệu mới
             $category = Category::where('cateid', $id)->firstOrFail();
 
+            $fileName = $category->image;
+            if ($request->hasFile('img')) {
+                if ($fileName) {
+                    Storage::disk('public')->delete('categories/' . $fileName);
+                }
+                $file = $request->file('img');
+                $fileName = Str::slug($request->catename) . '-' . time() . '.' . $file->extension();
+                $file->storeAs('categories', $fileName, 'public');
+            }
+
             $category->update([
                 'catename' => $request->catename,
                 'slug'     => $request->slug,
+                'image'    => $fileName,
                 'status'   => $request->status ?? $category->status,
             ]);
 
