@@ -83,19 +83,18 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label d-block fw-bold">Trạng thái</label>
+                            <label class="form-label d-block fw-bold">Trạng thái <span class="text-danger">*</span></label>
+                            <div class="d-flex align-items-center">
+                                <input type="radio" class="btn-check" name="status" id="active" value="1" {{ old('status', $product->status) == 1 ? 'checked' : '' }}>
+                                <label class="btn btn-success" for="active">Hiển thị</label>
 
-                            <input type="radio" class="btn-check" name="status" id="active" value="1"
-                                {{ old('status', $product->status) == 1 ? 'checked' : '' }}>
-                            <label class="btn btn-outline-success" for="active">
-                                Hiển thị
-                            </label>
+                                <input type="radio" class="btn-check" name="status" id="inactive" value="0" {{ old('status', $product->status) == 0 ? 'checked' : '' }}>
+                                <label class="btn btn-outline-danger ms-1" for="inactive">Ẩn</label>
 
-                            <input type="radio" class="btn-check" name="status" id="inactive" value="0"
-                                {{ old('status', $product->status) == 0 ? 'checked' : '' }}>
-                            <label class="btn btn-outline-danger" for="inactive">
-                                Ẩn
-                            </label>
+                                @error('status')
+                                    <span class="text-danger ms-2">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
 
                         <div class="mb-3">

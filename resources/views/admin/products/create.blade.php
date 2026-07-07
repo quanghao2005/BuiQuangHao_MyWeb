@@ -30,8 +30,7 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
-                            <input type="text" name="productname" class="form-control" value="{{ old('productname') }}"
-                                placeholder="VD: iPhone 15 Pro Max" required>
+                            <input type="text" name="productname" class="form-control" value="{{ old('productname') }}" required>
                         </div>
 
                         <div class="mb-3">
@@ -82,19 +81,16 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label d-block fw-bold">Trạng thái</label>
+                            <label class="form-label d-block fw-bold">Trạng thái <span class="text-danger">*</span></label>
+                            <div class="d-flex align-items-center">
+                                <input type="radio" class="btn-check" name="status" id="active" value="1" {{ old('status') === '1' ? 'checked' : '' }}>
+                                <label class="btn btn-success" for="active">Hiển thị</label>
 
-                            <input type="radio" class="btn-check" name="status" id="active" value="1"
-                                {{ old('status') === '1' ? 'checked' : '' }}>
-                            <label class="btn btn-outline-success" for="active">Hiển thị</label>
+                                <input type="radio" class="btn-check" name="status" id="inactive" value="0" {{ old('status') === '0' ? 'checked' : '' }}>
+                                <label class="btn btn-outline-danger ms-1" for="inactive">Ẩn</label>
 
-                            <input type="radio" class="btn-check" name="status" id="inactive" value="0"
-                                {{ old('status') === '0' ? 'checked' : '' }}>
-                            <label class="btn btn-outline-danger" for="inactive">Ẩn</label>
-
-                            <div class="mt-1">
                                 @error('status')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span class="text-danger ms-2">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
@@ -131,4 +127,3 @@
         </div>
     </div>
 @endsection
-s

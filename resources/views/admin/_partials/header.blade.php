@@ -12,13 +12,21 @@
     <nav class="navbar navbar-light bg-light admin-header">
         <div class="container-fluid">
             <span class="navbar-brand">Admin Panel</span>
-            <ul class="nav">
+            <ul class="nav align-items-center">
+                @if(Auth::check())
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Xin chào</a>
+                    <span class="nav-link text-dark">Xin chào <strong>{{ Auth::user()->fullname }}</strong></span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Đăng xuất</a>
+                    <a class="nav-link" href="{{ route('admin.changepass') }}">Đổi mật khẩu</a>
                 </li>
+                <li class="nav-item">
+                    <form action="{{ route('admin.logout') }}" method="POST" class="m-0">
+                        @csrf
+                        <button type="submit" class="btn btn-link nav-link">Đăng xuất</button>
+                    </form>
+                </li>
+                @endif
             </ul>
         </div>
     </nav>

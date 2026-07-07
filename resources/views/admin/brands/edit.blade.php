@@ -37,11 +37,18 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-bold">Trạng thái</label>
-                    <select name="status" class="form-select">
-                        <option value="1" {{ old('status', $brand->status) == 1 ? 'selected' : '' }}>Hiển thị</option>
-                        <option value="0" {{ old('status', $brand->status) == 0 ? 'selected' : '' }}>Ẩn</option>
-                    </select>
+                    <label class="form-label fw-bold">Trạng thái <span class="text-danger">*</span></label>
+                    <div class="d-flex align-items-center">
+                        <input type="radio" class="btn-check" name="status" id="active" value="1" {{ old('status', $brand->status) == 1 ? 'checked' : '' }}>
+                        <label class="btn btn-success" for="active">Hiển thị</label>
+
+                        <input type="radio" class="btn-check" name="status" id="inactive" value="0" {{ old('status', $brand->status) == 0 ? 'checked' : '' }}>
+                        <label class="btn btn-outline-danger ms-1" for="inactive">Ẩn</label>
+
+                        @error('status')
+                            <span class="text-danger ms-2">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-warning px-4"><i class="bi bi-pencil-square me-1"></i> Cập

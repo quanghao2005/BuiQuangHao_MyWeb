@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\DemoController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,24 +32,35 @@ Route::get('test2', [ProductController::class, 'test2']);
 // ==========================================
 Route::prefix('admin')->name('admin.')->group(function () {
     
-    // Redirect /admin to /admin/dashboard
-    Route::get('/', function () {
-        return redirect()->route('admin.dashboard');
+    // Authentication
+    Route::get('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/login', [AuthController::class, 'postLogin'])->name('login.post');
+    Route::get('/forgotpass', [AuthController::class, 'forgotPassword'])->name('forgotpass');
+    Route::post('/forgotpass', [AuthController::class, 'postForgotPassword'])->name('forgotpass.post');
+
+    Route::middleware('auth')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+        
+        // Change password
+        Route::get('/changepass', [AuthController::class, 'changePassword'])->name('changepass');
+        Route::post('/changepass', [AuthController::class, 'postChangePassword'])->name('changepass.post');
+
+        // Redirect /admin to /admin/dashboard
+        Route::get('/', function () {
+            return redirect()->route('admin.dashboard');
+        });
+
+        // Dashboard
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Các Route Resource (Chuẩn hóa)
+        Route::resource('categories', CategoryController::class);
+        Route::resource('brands', BrandController::class);
+        
+        // Custom route for deleting sub images
+        Route::delete('products/delete-image/{id}', [ProductController::class, 'deleteImage']);
+        Route::resource('products', ProductController::class);
+        Route::resource('users', UserController::class);
+        Route::resource('posts', PostController::class);
     });
-
-    // Dashboard
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
-
-    // Các Route Resource (Chuẩn hóa)
-    // Tự động sinh ra các route: index, create, store, show, edit, update, destroy
-    Route::resource('categories', CategoryController::class);
-    Route::resource('brands', BrandController::class);
-    
-    // Custom route for deleting sub images
-    Route::delete('products/delete-image/{id}', [ProductController::class, 'deleteImage']);
-    Route::resource('products', ProductController::class);
-    Route::resource('users', UserController::class);
-    Route::resource('posts', PostController::class);
 });

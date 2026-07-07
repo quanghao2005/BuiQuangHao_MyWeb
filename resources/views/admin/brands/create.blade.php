@@ -33,14 +33,17 @@
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">Trạng thái <span class="text-danger">*</span></label>
-                    <select name="status" class="form-select">
-                        <option value="">-- Chọn trạng thái --</option>
-                        <option value="1" {{ old('status') === '1' ? 'selected' : '' }}>Hiển thị</option>
-                        <option value="0" {{ old('status') === '0' ? 'selected' : '' }}>Ẩn</option>
-                    </select>
-                    @error('status')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
+                    <div class="d-flex align-items-center">
+                        <input type="radio" class="btn-check" name="status" id="active" value="1" {{ old('status') === '1' ? 'checked' : '' }}>
+                        <label class="btn btn-success" for="active">Hiển thị</label>
+
+                        <input type="radio" class="btn-check" name="status" id="inactive" value="0" {{ old('status') === '0' ? 'checked' : '' }}>
+                        <label class="btn btn-outline-danger ms-1" for="inactive">Ẩn</label>
+
+                        @error('status')
+                            <span class="text-danger ms-2">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-success px-4 mt-3">Lưu dữ liệu</button>
