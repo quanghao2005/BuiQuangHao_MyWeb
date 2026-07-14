@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-
-<body>
     <div class="admin-sidebar bg-dark text-white p-3 vh-100">
         <h4 class="mb-4 text-uppercase text-success fw-bold">
             <i class="bi bi-speedometer2 me-2"></i>
@@ -67,6 +57,3 @@
             </li>
         </ul>
     </div>
-</body>
-
-</html>
