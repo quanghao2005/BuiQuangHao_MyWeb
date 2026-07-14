@@ -53,14 +53,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Các Route Resource (Chuẩn hóa)
-        Route::resource('categories', CategoryController::class);
-        Route::resource('brands', BrandController::class);
+        // CRUD - Resource route
+        Route::middleware('roles:1')->group(function () {
+            // Trash routes for Soft Delete (Categories)
+            Route::get('trash/categories', [CategoryController::class, 'trash'])->name('categories.trash');
+            Route::patch('categories/{id}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
+            Route::delete('categories/{id}/forcedelete', [CategoryController::class, 'forceDelete'])->name('categories.forceDelete');
+            
+            Route::resource('categories', CategoryController::class);
+            Route::resource('brands', BrandController::class);
+            
+            // Custom route for deleting sub images
+            Route::delete('products/delete-image/{id}', [ProductController::class, 'deleteImage']);
+            Route::resource('products', ProductController::class)->except(['index']);
+            Route::resource('users', UserController::class);
+            Route::resource('posts', PostController::class);
+        });
         
-        // Custom route for deleting sub images
-        Route::delete('products/delete-image/{id}', [ProductController::class, 'deleteImage']);
-        Route::resource('products', ProductController::class);
-        Route::resource('users', UserController::class);
-        Route::resource('posts', PostController::class);
+        // Allowed for both Admin (1) and Staff (2)
+        Route::resource('products', ProductController::class)->only(['index'])->middleware('roles:1,2');
     });
 });

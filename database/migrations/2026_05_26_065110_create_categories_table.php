@@ -19,6 +19,7 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1);
             $table->integer('sort_order')->default(0);
             $table->text('description')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

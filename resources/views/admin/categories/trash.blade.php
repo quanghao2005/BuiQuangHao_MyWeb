@@ -1,27 +1,15 @@
 @extends('admin.layouts.admin')
-@section('title', 'Loại Sản phẩm')
-
+@section('title', 'Trash-Loại Sản phẩm')
 @section('content')
     <div class="container-fluid pt-4 px-4">
         <div class="bg-light rounded h-100 p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0 text-uppercase fw-bold text-primary h5">DANH SÁCH LOẠI SẢN PHẨM</h2>
-                <div>
-                    <a href="{{ route('admin.categories.create') }}" class="btn btn-sm btn-success px-3 me-2">
-                        <i class="bi bi-plus-lg me-1"></i>Thêm mới
-                    </a>
-                    <a href="{{ route('admin.categories.trash') }}" class="btn btn-sm btn-danger px-3">
-                        <i class="bi bi-trash me-1"></i>Thùng rác
-                    </a>
-                </div>
-            </div>
+            <h2 class="mb-3 text-uppercase fw-bold text-danger h5">DANH SÁCH LOẠI SẢN PHẨM - ĐANG CHỜ XÓA</h2>
+            
+            <x-admin.alert />
 
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
+            <a href="{{ route('admin.categories.index') }}" class="btn btn-primary mb-3">
+                <i class="bi bi-arrow-left-circle me-1"></i> Quay lại danh sách
+            </a>
 
             <div class="table-responsive">
                 <table class="table table-bordered table-hover table-striped align-middle mb-0">
@@ -37,7 +25,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- @forelse tự động xử lý nếu $list rỗng --}}
                         @forelse ($list as $key => $item)
                             <tr>
                                 <td class="text-center fw-bold">{{ $list->firstItem() + $key }}</td>
@@ -52,21 +39,27 @@
                                 <td class="fw-bold text-dark">{{ $item->catename }}</td>
                                 <td><code class="text-secondary">{{ $item->slug }}</code></td>
                                 <td class="text-center">
-                                    <span class="badge {{ $item->status == 1 ? 'bg-success' : 'bg-danger' }} px-2 py-1">
-                                        {{ $item->status == 1 ? 'Hiển thị' : 'Ẩn' }}
-                                    </span>
+                                    @if ($item->status == 1)
+                                        <span class="badge bg-success px-2 py-1">Hiển thị</span>
+                                    @else
+                                        <span class="badge bg-danger px-2 py-1">Ẩn</span>
+                                    @endif
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
-                                        <a href="{{ route('admin.categories.edit', $item->cateid) }}"
-                                            class="btn btn-sm btn-warning">
-                                            <i class="bi bi-pencil-square"></i> Sửa
-                                        </a>
-                                        <form action="{{ route('admin.categories.destroy', $item->cateid) }}"
-                                            method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?')">
-                                            @csrf @method('DELETE')
+                                        <form action="{{ route('admin.categories.restore', $item->cateid) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn btn-sm btn-success">
+                                                Khôi phục
+                                            </button>
+                                        </form>
+
+                                        <form action="{{ route('admin.categories.forceDelete', $item->cateid) }}" method="POST" class="d-inline" onsubmit="return confirm('Xóa vĩnh viễn?')">
+                                            @csrf
+                                            @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-danger">
-                                                <i class="bi bi-trash"></i> Xóa
+                                                Xóa
                                             </button>
                                         </form>
                                     </div>
@@ -74,7 +67,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center text-muted py-4">Không có dữ liệu loại sản phẩm.</td>
+                                <td colspan="7" class="text-center text-muted py-4">Thùng rác trống.</td>
                             </tr>
                         @endforelse
                     </tbody>

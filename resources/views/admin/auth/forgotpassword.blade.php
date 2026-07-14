@@ -9,36 +9,19 @@
 </head>
 <body class="bg-light">
     <div class="container mt-5">
-        <form action="{{ route('admin.forgotpass.post') }}" class="mx-auto shadow-sm p-4 w-50 bg-white rounded" method="POST">
+        <form action="{{ route('admin.forgotpass.post') }}" class="mx-auto shadow-lg p-4 w-50 bg-light" method="POST">
             @csrf
-            <h2 class="mb-4 text-center text-primary fw-bold">QUÊN MẬT KHẨU</h2>
-            
-            <div class="alert alert-info">
-                Vui lòng nhập tên đăng nhập và email của bạn. Nếu thông tin chính xác, mật khẩu của bạn sẽ được đặt lại thành <strong>123456</strong>.
-            </div>
-
+            <h2>Quên mật khẩu</h2>
             <x-admin.alert></x-admin.alert>
-            
-            <div class="mb-3">
-                <label for="f-username" class="form-label fw-bold">Tên đăng nhập <span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('username') is-invalid @enderror" id="f-username" placeholder="Nhập tên đăng nhập..." name="username" value="{{ old('username') }}">
-                @error('username')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
+
+            <div class="mb-3 mt-3">
+                <label for="f-email">Email</label>
+                <input type="text" class="form-control" id="f-email" placeholder="" name="email" value="{{ old('email') }}">
             </div>
             
-            <div class="mb-4">
-                <label for="f-email" class="form-label fw-bold">Email <span class="text-danger">*</span></label>
-                <input type="email" class="form-control @error('email') is-invalid @enderror" id="f-email" placeholder="Nhập địa chỉ email..." name="email" value="{{ old('email') }}">
-                @error('email')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-            
-            <button type="submit" class="btn btn-warning w-100 py-2 fw-bold mb-3">Đặt lại mật khẩu</button>
-            
-            <div class="text-center">
-                <a href="{{ route('admin.login') }}" class="text-decoration-none">Quay lại trang Đăng nhập</a>
+            <div class="mb-3 mt-3 d-flex gap-1">
+                <button type="submit" class="btn btn-primary">Gửi</button>
+                <a href="{{ route('admin.login') }}" class="btn btn-warning">Quay lại đăng nhập</a>
             </div>
         </form>
     </div>

@@ -192,8 +192,48 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        Category::where('cateid', $id)->delete();
+        try {
+            $category = Category::where('cateid', $id)->firstOrFail();
+            $category->delete();
 
-        return redirect()->route('admin.categories.index')->with('success', 'Xóa thành công!');
+            return redirect()->route('admin.categories.index')->with('success', 'Xóa thành công!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Thực hiện thất bại.');
+        }
+    }
+
+    public function trash()
+    {
+        $list = Category::onlyTrashed()
+            ->orderBy('catename', 'asc')
+            ->paginate(10);
+            
+        return view('admin.categories.trash', compact('list'));
+    }
+
+    public function restore($id)
+    {
+        try {
+            Category::onlyTrashed()->findOrFail($id)->restore();
+            return redirect()->route('admin.categories.trash')->with('success', 'Khôi phục thành công.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Khôi phục thất bại.');
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        try {
+            $category = Category::onlyTrashed()->findOrFail($id);
+            // Optionally delete image from storage if needed
+            if ($category->image) {
+                Storage::disk('public')->delete('categories/' . $category->image);
+            }
+            $category->forceDelete();
+            
+            return redirect()->route('admin.categories.trash')->with('success', 'Xóa vĩnh viễn thành công.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Xóa thất bại.');
+        }
     }
 }
