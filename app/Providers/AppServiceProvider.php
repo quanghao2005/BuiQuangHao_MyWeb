@@ -20,7 +20,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Cấu hình hiển thị phân trang theo chuẩn Bootstrap 5
-        Paginator::useBootstrapFive(); //
+        Paginator::useBootstrapFive();
+
+        // Share categories and brands to all views
+        \Illuminate\Support\Facades\View::composer('client.*', function ($view) {
+            $view->with('sharedCategories', \App\Models\Category::where('status', 1)->get());
+            $view->with('sharedBrands', \App\Models\Brand::where('status', 1)->get());
+        });
     }
 }
