@@ -12,6 +12,11 @@
 
     {{-- CDN Bootstrap Icons --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    {{-- SweetAlert2 CSS --}}
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.8/dist/sweetalert2.min.css" rel="stylesheet">
+    
+    @stack('styles')
 </head>
 
 <body>
@@ -42,7 +47,66 @@
         </div>
     </div>
 
+    {{-- SweetAlert2 JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.8/dist/sweetalert2.all.min.js"></script>
+
     @stack('scripts')
+    
+    {{-- Global Notifications --}}
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        @if(session('success'))
+            Toast.fire({
+                icon: 'success',
+                title: '{{ session("success") }}'
+            });
+        @endif
+
+        @if(session('error'))
+            Toast.fire({
+                icon: 'error',
+                title: '{{ session("error") }}'
+            });
+        @endif
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const badge = document.getElementById('sidebar-pending-orders-badge');
+            
+            function fetchSidebarStats() {
+                fetch('{{ route("admin.sidebar_stats") }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.pendingOrders > 0) {
+                            badge.innerText = data.pendingOrders;
+                            badge.style.display = 'inline-block';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    })
+                    .catch(error => console.error('Error fetching sidebar stats:', error));
+            }
+
+            // Lấy dữ liệu ngay khi tải trang
+            if (badge) {
+                fetchSidebarStats();
+                // Tự động làm mới mỗi 10 giây
+                setInterval(fetchSidebarStats, 10000);
+            }
+        });
+    </script>
 </body>
 
 </html>

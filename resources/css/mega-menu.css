@@ -1,0 +1,181 @@
+/* Mega Menu CSS */
+.navbar .mega-dropdown {
+    position: static !important;
+}
+
+.mega-dropdown .dropdown-menu.mega-menu {
+    width: 100%;
+    left: 0;
+    right: 0;
+    top: 100%;
+    margin-top: 0;
+    padding: 0;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.05);
+    display: none; /* Ẩn mặc định */
+    background-color: var(--bs-body-bg);
+}
+
+/* Thêm cầu nối vô hình để không bị mất hover khi rê chuột xuống */
+.mega-dropdown .dropdown-menu.mega-menu::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: transparent;
+}
+
+/* Hiển thị menu khi hover */
+.mega-dropdown:hover .mega-menu {
+    display: block;
+}
+
+/* Vùng chứa Mega Menu (Chia 2 cột) */
+.mega-menu-container {
+    display: flex;
+    min-height: 400px;
+    background-color: var(--bs-body-bg);
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+}
+
+/* Cột danh mục (bên trái) */
+.mega-menu-left {
+    width: 25%;
+    background-color: var(--bs-tertiary-bg);
+    border-right: 1px solid var(--bs-border-color);
+    padding: 10px 0;
+}
+
+/* Thanh cuộn cho phần danh mục */
+.mega-menu-left-scroll {
+    max-height: 380px; /* Tương đương khoảng 10 items */
+    overflow-y: auto;
+}
+
+/* Tùy chỉnh thanh cuộn */
+.mega-menu-left-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+.mega-menu-left-scroll::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+/* Các item danh mục */
+.mega-menu-left-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    color: var(--bs-body-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+}
+.mega-menu-left-item:hover, .mega-menu-left-item.active {
+    background-color: var(--bs-body-bg);
+    color: #3b82f6;
+    border-left: 3px solid #3b82f6;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+}
+
+/* Cột nội dung (bên phải) */
+.mega-menu-right {
+    width: 75%;
+    padding: 20px;
+    background-color: var(--bs-body-bg);
+}
+
+/* Nội dung của từng danh mục (ẩn đi mặc định) */
+.mega-content-panel {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+.mega-content-panel.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Các box hiển thị (Theo giá, Theo hãng...) */
+.mega-section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--bs-heading-color);
+    margin-bottom: 18px;
+    padding-bottom: 8px;
+    position: relative;
+}
+.mega-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: #3b82f6;
+    border-radius: 2px;
+}
+
+/* Dạng nút lọc (Filter tags) */
+.mega-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.mega-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 18px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 50rem;
+    text-decoration: none;
+    color: var(--bs-body-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    background-color: var(--bs-tertiary-bg);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mega-tag:hover {
+    border-color: #bfdbfe;
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.mega-product-card {
+    transition: all 0.2s ease;
+    background-color: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color) !important;
+}
+.mega-product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important;
+}
+.hover-primary:hover {
+    color: #0d6efd !important;
+}
+
+.mega-tag img {
+    height: 20px;
+    margin-right: 8px;
+}
+
+.mega-tag i {
+    color: #e74c3c;
+    margin-right: 8px;
+    font-size: 1.1rem;
+}

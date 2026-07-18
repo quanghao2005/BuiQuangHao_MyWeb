@@ -8,7 +8,7 @@
         
         <x-admin.alert />
 
-        <form action="{{ route('admin.changepass.post') }}" method="POST">
+        <form action="{{ route('changepass.post') }}" method="POST">
             @csrf
             <div class="mb-3">
                 <label class="form-label fw-bold">Mật khẩu cũ <span class="text-danger">*</span></label>

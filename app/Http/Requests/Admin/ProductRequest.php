@@ -32,7 +32,7 @@ class ProductRequest extends FormRequest
                 Rule::unique('products', 'slug')->ignore($id),
                 'regex:/^[a-zA-Z0-9\-\_]+$/',
             ],
-            'price' => 'required|numeric|min:0|max:9999999',
+            'price' => 'required|numeric|min:0|max:999999999',
             'pricediscount' => 'nullable|numeric|min:0|lte:price',
             'status' => 'required|in:0,1',
             'cateid' => 'required|exists:categories,cateid',

@@ -14,14 +14,19 @@
             <span class="navbar-brand">Admin Panel</span>
             <ul class="nav align-items-center">
                 @if(Auth::check())
+                <li class="nav-item me-3">
+                    <a href="{{ route('home') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                        <i class="bi bi-shop me-1"></i>Về cửa hàng
+                    </a>
+                </li>
                 <li class="nav-item">
                     <span class="nav-link text-dark">Xin chào <strong>{{ Auth::user()->fullname }}</strong></span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.changepass') }}">Đổi mật khẩu</a>
+                    <a class="nav-link" href="{{ route('changepass') }}">Đổi mật khẩu</a>
                 </li>
                 <li class="nav-item">
-                    <form action="{{ route('admin.logout') }}" method="POST" class="m-0">
+                    <form action="{{ route('logout') }}" method="POST" class="m-0">
                         @csrf
                         <button type="submit" class="btn btn-link nav-link">Đăng xuất</button>
                     </form>

@@ -36,13 +36,23 @@ class PostController extends Controller
     public function store(PostRequest $request)
     {
         try {
+            $imageName = 'default.jpg';
+            
+            if ($request->hasFile('image_file')) {
+                $file = $request->file('image_file');
+                $imageName = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('public/posts', $imageName);
+            } elseif ($request->filled('image_link')) {
+                $imageName = $request->image_link;
+            }
+
             Post::create([
                 'title'   => $request->title,
                 'slug'    => $request->slug ?? Str::slug($request->title), // Tự động tạo slug nếu trống
                 'content' => $request->detail ?? 'Nội dung mặc định', // Cột đúng trong DB là content
                 'status'  => $request->status ?? 1,
                 'user_id' => $request->userid, // Cột đúng trong DB là user_id
-                'image'   => $request->image ?? 'default.jpg', // Không được null
+                'image'   => $imageName,
             ]);
 
             return redirect()->route('admin.posts.index')->with('success', 'Thêm bài viết thành công!');
@@ -79,14 +89,22 @@ class PostController extends Controller
         try {
             $post = Post::findOrFail($id);
 
+            $imageName = $post->image;
+            if ($request->hasFile('image_file')) {
+                $file = $request->file('image_file');
+                $imageName = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('public/posts', $imageName);
+            } elseif ($request->filled('image_link')) {
+                $imageName = $request->image_link;
+            }
+
             $post->update([
                 'title'   => $request->title,
                 'slug'    => $request->slug ?? Str::slug($request->title),
                 'content' => $request->detail ?? $post->content,
                 'status'  => $request->status ?? $post->status,
                 'user_id' => $request->userid,
-                // Giữ lại ảnh cũ nếu không có ảnh mới cập nhật
-                'image'   => $request->image ?? $post->image,
+                'image'   => $imageName,
             ]);
 
             return redirect()->route('admin.posts.index')->with('success', 'Cập nhật bài viết thành công!');

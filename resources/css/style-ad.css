@@ -15,14 +15,12 @@
 
 body {
     font-family: 'Outfit', sans-serif !important;
-    background-color: #F3F4F6 !important; /* Thay thế bg-light của Bootstrap */
-    color: #374151;
 }
 
 /* ------------------- SIDEBAR ------------------- */
 .admin-sidebar {
     background: var(--sidebar-bg) !important;
-    box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+    box-shadow: 2px 0 15px rgba(120, 5, 236, 0.1);
     position: relative;
     z-index: 100;
 }

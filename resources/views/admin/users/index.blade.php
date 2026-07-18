@@ -27,7 +27,7 @@
                         @forelse ($list as $key => $item)
                             <tr>
                                 <td class="text-center fw-bold">{{ $list->firstItem() + $key }}</td>
-                                <td class="fw-bold">{{ $item->name }}</td>
+                                <td class="fw-bold">{{ $item->fullname ?? $item->username ?? 'Chưa cập nhật' }}</td>
                                 <td><a href="mailto:{{ $item->email }}">{{ $item->email }}</a></td>
                                 <td class="text-center">{{ $item->created_at->format('d/m/Y') }}</td>
                                 <td class="text-center">

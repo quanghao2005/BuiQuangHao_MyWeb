@@ -19,6 +19,9 @@ class HomeController extends Controller
         // 8 Sản phẩm bán chạy (Tạm thời lấy ngẫu nhiên vì chưa có logic tính bán chạy)
         $bestSellerProducts = Product::where('status', 1)->inRandomOrder()->take(8)->get();
 
-        return view('client.home.index', compact('newProducts', 'discountProducts', 'bestSellerProducts'));
+        // Lấy các Banner đang hiển thị
+        $banners = \App\Models\Banner::where('status', 1)->orderBy('order', 'asc')->get();
+
+        return view('client.home.index', compact('newProducts', 'discountProducts', 'bestSellerProducts', 'banners'));
     }
 }

@@ -16,29 +16,50 @@
                     </div>
                     <div class="card-body p-4">
                         <div class="row g-3">
+                            @php
+                                $defaultName = Auth::check() ? Auth::user()->fullname : '';
+                                $defaultPhone = Auth::check() ? Auth::user()->phone : '';
+                                $defaultEmail = Auth::check() ? Auth::user()->email : '';
+                                $defaultAddress = Auth::check() ? Auth::user()->address : '';
+                            @endphp
                             <div class="col-md-12">
                                 <label for="name" class="form-label fw-bold">Họ và tên <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="name" name="name" required placeholder="Nhập họ và tên người nhận">
+                                <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $defaultName) }}" required placeholder="Nhập họ và tên người nhận">
+                                @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             
                             <div class="col-md-6">
                                 <label for="phone" class="form-label fw-bold">Số điện thoại <span class="text-danger">*</span></label>
-                                <input type="tel" class="form-control" id="phone" name="phone" required placeholder="Ví dụ: 0987654321">
+                                <input type="tel" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $defaultPhone) }}" required placeholder="Ví dụ: 0987654321">
+                                @error('phone')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             
                             <div class="col-md-6">
                                 <label for="email" class="form-label fw-bold">Địa chỉ Email</label>
-                                <input type="email" class="form-control" id="email" name="email" placeholder="Để nhận thông tin đơn hàng">
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $defaultEmail) }}" placeholder="Để nhận thông tin đơn hàng">
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="col-md-12">
                                 <label for="address" class="form-label fw-bold">Địa chỉ giao hàng <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="address" name="address" required placeholder="Nhập số nhà, tên đường, phường/xã, quận/huyện...">
+                                <input type="text" class="form-control @error('address') is-invalid @enderror" id="address" name="address" value="{{ old('address', $defaultAddress) }}" required placeholder="Nhập số nhà, tên đường, phường/xã, quận/huyện...">
+                                @error('address')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="col-md-12">
                                 <label for="note" class="form-label fw-bold">Ghi chú đơn hàng (Tùy chọn)</label>
-                                <textarea class="form-control" id="note" name="note" rows="3" placeholder="Ghi chú về thời gian hoặc địa điểm giao hàng..."></textarea>
+                                <textarea class="form-control @error('note') is-invalid @enderror" id="note" name="note" rows="3" placeholder="Ghi chú về thời gian hoặc địa điểm giao hàng...">{{ old('note') }}</textarea>
+                                @error('note')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>

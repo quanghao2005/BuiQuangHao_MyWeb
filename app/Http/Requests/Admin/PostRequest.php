@@ -23,7 +23,8 @@ class PostRequest extends FormRequest
             'slug'   => 'nullable|string|max:255',
             'detail' => 'nullable|string',
             'status' => 'required|in:0,1',
-            'image'  => 'nullable|string'
+            'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'image_link' => 'nullable|string'
         ];
     }
 

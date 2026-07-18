@@ -28,7 +28,13 @@
                             <tr>
                                 <td>{{ $item->id }}</td>
                                 <td>
-                                    <img src="{{ asset('images/banner1.jpg') }}" width="60">
+                                    @if(str_starts_with($item->image, 'http'))
+                                        <img src="{{ $item->image }}" width="60" height="40" style="object-fit: cover;" class="rounded">
+                                    @elseif($item->image && file_exists(public_path('storage/posts/' . $item->image)))
+                                        <img src="{{ asset('storage/posts/' . $item->image) }}" width="60" height="40" style="object-fit: cover;" class="rounded">
+                                    @else
+                                        <img src="https://via.placeholder.com/60x40?text=No+Image" width="60" height="40" style="object-fit: cover;" class="rounded">
+                                    @endif
                                 </td>
                                 <td class="text-start fw-bold">{{ $item->title }}</td>
 

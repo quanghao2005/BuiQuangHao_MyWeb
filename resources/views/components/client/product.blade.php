@@ -10,11 +10,11 @@
         </div>
     @endif
 
-    <a href="{{ route('products.show', $product->slug) }}">
+    <a href="{{ route('products.show', $product->slug) }}" class="product-image-container d-block">
         @if ($product->image)
-            <img src="{{ asset('storage/products/' . $product->image) }}" class="card-img-top product-image rounded-top" alt="{{ $product->productname }}">
+            <img src="{{ asset('storage/products/' . $product->image) }}" class="card-img-top product-image rounded-4" alt="{{ $product->productname }}">
         @else
-            <img src="{{ asset('images/no-image.jpg') }}" class="card-img-top product-image rounded-top" alt="No Image">
+            <img src="{{ asset('images/no-image.jpg') }}" class="card-img-top product-image rounded-4" alt="No Image">
         @endif
     </a>
 
@@ -34,7 +34,7 @@
             @endif
         </div>
 
-        <button class="btn btn-outline-primary mt-3 w-100 btn-add-cart" data-id="{{ $product->id }}">
+        <button class="btn btn-gradient rounded-pill mt-3 w-100 btn-add-cart fw-bold shadow-sm" data-id="{{ $product->id }}">
             <i class="bi bi-cart-plus me-1"></i> Thêm vào giỏ
         </button>
     </div>

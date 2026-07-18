@@ -15,20 +15,31 @@
     <div class="card shadow-sm border-0 mb-5">
         <div class="row g-0">
             <div class="col-md-5 p-4 text-center">
-                @if ($product->image)
-                    <img src="{{ asset('storage/products/' . $product->image) }}" class="img-fluid rounded" alt="{{ $product->productname }}">
-                @else
-                    <img src="{{ asset('images/no-image.jpg') }}" class="img-fluid rounded" alt="No Image">
+                <div class="main-image-container mb-3 border rounded shadow-sm overflow-hidden d-flex align-items-center justify-content-center" style="height: 400px; background-color: #fff;">
+                    @if ($product->image)
+                        <img id="mainImage" src="{{ asset('storage/products/' . $product->image) }}" class="img-fluid" style="max-height: 100%; object-fit: contain;" alt="{{ $product->productname }}">
+                    @else
+                        <img id="mainImage" src="{{ asset('images/no-image.jpg') }}" class="img-fluid" style="max-height: 100%; object-fit: contain;" alt="No Image">
+                    @endif
+                </div>
+
+                @if($product->images && $product->images->count() > 0)
+                <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+                    <!-- Các ảnh phụ -->
+                    @foreach($product->images as $subImg)
+                        <img src="{{ asset('storage/products/' . $subImg->image) }}" class="img-thumbnail sub-image-thumb" style="width: 80px; height: 80px; object-fit: contain; cursor: pointer;" onclick="changeMainImage(this, '{{ asset('storage/products/' . $subImg->image) }}')">
+                    @endforeach
+                </div>
                 @endif
             </div>
-            <div class="col-md-7 p-4 bg-light">
+            <div class="col-md-7 p-4 bg-body-tertiary">
                 <div class="card-body h-100 d-flex flex-column justify-content-center">
                     <h2 class="card-title fw-bold mb-3">{{ $product->productname }}</h2>
                     
                     <p class="mb-2"><strong>Thương hiệu:</strong> <a href="{{ route('products.brand', $product->brand->slug ?? '') }}" class="text-decoration-none">{{ $product->brand->brandname ?? 'Đang cập nhật' }}</a></p>
                     <p class="mb-4"><strong>Tình trạng:</strong> <span class="badge bg-success">Còn hàng</span></p>
 
-                    <div class="bg-white p-3 rounded shadow-sm mb-4">
+                    <div class="bg-body p-3 rounded shadow-sm mb-4">
                         @if($product->pricediscount > 0)
                             <h3 class="text-danger fw-bold mb-0">{{ number_format($product->pricediscount, 0, ',', '.') }}đ</h3>
                             <div class="text-muted text-decoration-line-through">{{ number_format($product->price, 0, ',', '.') }}đ</div>
@@ -85,21 +96,83 @@
                 .then(data => {
                     if(data.success) {
                         document.getElementById('cart-count').innerText = data.cart_count;
-                        const alertHtml = `
-                            <div class="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3 z-3 shadow-lg" role="alert">
-                                <i class="bi bi-check-circle-fill me-2"></i>${data.message}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        `;
-                        document.body.insertAdjacentHTML('beforeend', alertHtml);
-                        setTimeout(() => {
-                            const alerts = document.querySelectorAll('.alert');
-                            alerts.forEach(a => a.remove());
-                        }, 3000);
+                        // Hiển thị thông báo bằng SweetAlert2
+                        if (typeof Toast !== 'undefined') {
+                            Toast.fire({
+                                icon: 'success',
+                                title: data.message
+                            });
+                        }
                     }
                 });
             });
         });
+    });
+
+    const productImages = [
+        "{{ asset('storage/products/' . ($product->image ? $product->image : 'no-image.jpg')) }}",
+        @foreach($product->images as $img)
+            "{{ asset('storage/products/' . $img->image) }}",
+        @endforeach
+    ];
+    let currentImageIndex = 0;
+    let autoSlideInterval;
+
+    function changeMainImage(element, src) {
+        document.getElementById('mainImage').src = src;
+        // Xóa class active ở tất cả ảnh nhỏ
+        document.querySelectorAll('.sub-image-thumb').forEach(thumb => {
+            thumb.classList.remove('border-primary');
+            thumb.classList.remove('border-2');
+        });
+        
+        // Thêm class active cho ảnh được click nếu element hợp lệ
+        if (element) {
+            element.classList.add('border-primary');
+            element.classList.add('border-2');
+            // Cập nhật currentImageIndex dựa vào src
+            currentImageIndex = productImages.indexOf(src);
+        }
+        
+        // Reset timer khi người dùng tự click
+        resetAutoSlide();
+    }
+
+    function nextImage() {
+        if (productImages.length <= 1) return;
+        currentImageIndex = (currentImageIndex + 1) % productImages.length;
+        const nextSrc = productImages[currentImageIndex];
+        
+        // Cập nhật ảnh chính
+        document.getElementById('mainImage').src = nextSrc;
+        
+        // Cập nhật viền cho ảnh nhỏ (nếu có)
+        document.querySelectorAll('.sub-image-thumb').forEach(thumb => {
+            thumb.classList.remove('border-primary');
+            thumb.classList.remove('border-2');
+            
+            // So sánh src bằng cách lấy đường dẫn đầy đủ
+            if (thumb.src === nextSrc || thumb.getAttribute('onclick').includes(nextSrc)) {
+                thumb.classList.add('border-primary');
+                thumb.classList.add('border-2');
+            }
+        });
+    }
+
+    function startAutoSlide() {
+        if (productImages.length > 1) {
+            autoSlideInterval = setInterval(nextImage, 3000);
+        }
+    }
+
+    function resetAutoSlide() {
+        clearInterval(autoSlideInterval);
+        startAutoSlide();
+    }
+
+    // Khởi động auto slide khi tải trang
+    document.addEventListener('DOMContentLoaded', function() {
+        startAutoSlide();
     });
 </script>
 @endpush

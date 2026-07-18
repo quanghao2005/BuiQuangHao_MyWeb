@@ -10,7 +10,7 @@
             {{-- Gọi component alert --}}
             <x-admin.alert />
 
-            <form action="{{ route('admin.posts.store') }}" method="POST">
+            <form action="{{ route('admin.posts.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">
@@ -45,13 +45,21 @@
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Hình ảnh đại diện</label>
-                        <input type="text" name="image" class="form-control" value="{{ old('image') }}"
-                            placeholder="URL hoặc tên file ảnh...">
+                        <div class="d-flex flex-column gap-2">
+                            <div>
+                                <small class="text-muted d-block mb-1">Tải lên từ máy tính (Ưu tiên)</small>
+                                <input type="file" name="image_file" class="form-control" accept="image/*">
+                            </div>
+                            <div>
+                                <small class="text-muted d-block mb-1">Hoặc nhập đường dẫn (URL) ảnh</small>
+                                <input type="text" name="image_link" class="form-control" placeholder="https://..." value="{{ old('image_link') }}">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-md-12 mb-3">
                         <label class="form-label fw-bold">Chi tiết bài viết</label>
-                        <textarea name="detail" class="form-control" rows="5" placeholder="Nội dung bài viết...">{{ old('detail') }}</textarea>
+                        <textarea name="detail" id="summernote" class="form-control" rows="5" placeholder="Nội dung bài viết...">{{ old('detail') }}</textarea>
                     </div>
 
                     <div class="col-md-4 mb-4">
@@ -74,3 +82,31 @@
         </div>
     </div>
 @endsection
+
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+@endpush
+
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#summernote').summernote({
+            placeholder: 'Nhập nội dung bài viết...',
+            tabsize: 2,
+            height: 300,
+            dialogsInBody: true,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ]
+        });
+    });
+</script>
+@endpush

@@ -45,10 +45,23 @@
                                 <i class="bi bi-journal-text me-2"></i>Bài viết
                             </a>
                         </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50 d-flex justify-content-between align-items-center" href="{{ route('admin.orders.index') }}">
+                                <span><i class="bi bi-cart-check me-2"></i>Đơn hàng</span>
+                                <span class="badge bg-danger rounded-pill" id="sidebar-pending-orders-badge" style="display: none;">0</span>
+                            </a>
+                        </li>
 
                         <li class="nav-item">
                             <a class="nav-link text-white-50" href="{{ route('admin.users.index') }}">
                                 <i class="bi bi-people me-2"></i>Người dùng
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" href="{{ route('admin.banners.index') }}">
+                                <i class="bi bi-images me-2"></i>Quản lý Banner
                             </a>
                         </li>
 
